@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Connexion</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0f;
+      --panel: #111118;
+      --border: #1e1e2e;
+      --accent: #7c6aff;
+      --accent2: #ff6ab0;
+      --text: #e8e6f0;
+      --muted: #6b6880;
+      --success: #4ade80;
+      --error: #f87171;
+    }
+
+    body {
+      font-family: 'DM Mono', monospace;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(124,106,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(124,106,255,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      animation: gridShift 20s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes gridShift {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(40px, 40px); }
+    }
+
+    .orb { position: fixed; border-radius: 50%; filter: blur(80px); opacity: 0.15; pointer-events: none; }
+    .orb1 { width: 500px; height: 500px; background: var(--accent); top: -150px; left: -150px; animation: float1 12s ease-in-out infinite; }
+    .orb2 { width: 400px; height: 400px; background: var(--accent2); bottom: -100px; right: -100px; animation: float2 15s ease-in-out infinite; }
+
+    @keyframes float1 { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(40px,30px); } }
+    @keyframes float2 { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(-30px,-40px); } }
+
+    .card {
+      position: relative;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 48px 44px;
+      width: 420px;
+      max-width: 95vw;
+      animation: cardIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    @keyframes cardIn { to { opacity: 1; transform: translateY(0); } }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+
+    .tag { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+    .tag::before { content: ''; display: inline-block; width: 18px; height: 1px; background: var(--accent); }
+
+    h1 { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 8px; }
+    h1 span { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+    .subtitle { font-size: 12px; color: var(--muted); margin-bottom: 36px; letter-spacing: 0.02em; }
+
+    .field { margin-bottom: 20px; }
+
+    label { display: block; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+
+    input {
+      width: 100%;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 12px 14px;
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    }
+    input:focus { border-color: var(--accent); background: rgba(124,106,255,0.05); box-shadow: 0 0 0 3px rgba(124,106,255,0.1); }
+    input::placeholder { color: var(--muted); }
+
+    button {
+      width: 100%;
+      margin-top: 28px;
+      padding: 14px;
+      background: var(--accent);
+      border: none;
+      border-radius: 2px;
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #fff;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.2s, transform 0.1s;
+    }
+    button:hover { background: #6a58ee; }
+    button:active { transform: scale(0.98); }
+    button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    button.loading::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+      animation: shimmer 1.2s infinite;
+    }
+    @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+
+    .message {
+      margin-top: 16px; padding: 10px 14px; border-radius: 2px;
+      font-size: 12px; letter-spacing: 0.03em;
+      display: none; align-items: center; gap: 8px;
+    }
+    .message.success { display: flex; background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.2); color: var(--success); }
+    .message.error   { display: flex; background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.2); color: var(--error); }
+
+    .footer { margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border); font-size: 10px; color: var(--muted); text-align: center; letter-spacing: 0.05em; }
+  </style>
+</head>
+<body>
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+
+  <div class="card">
+    <div class="tag">Authentification</div>
+    <h1>Loustique Home</span></h1>
+    <p class="subtitle">Connectez-vous pour accéder à votre espace.</p>
+
+    <div class="field">
+      <label for="username">Identifiant</label>
+      <input type="text" id="username" placeholder="votre_nom" autocomplete="username" />
+    </div>
+
+    <div class="field">
+      <label for="password">Mot de passe</label>
+      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" />
+    </div>
+
+    <button id="btn" onclick="handleLogin()">Se connecter</button>
+
+    <div class="message" id="msg">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path id="icon-path"/>
+      </svg>
+      <span id="msg-text"></span>
+    </div>
+
+    <div class="footer">Accès réservé aux Utilisateurs étant ajoutés par les loustiques</div>
+  </div>
+
+  <script>
+    ["username", "password"].forEach(id => {
+      document.getElementById(id).addEventListener("keydown", e => {
+        if (e.key === "Enter") handleLogin();
+      });
+    });
+
+    async function handleLogin() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value;
+      const btn      = document.getElementById("btn");
+
+      document.getElementById("msg").className = "message";
+
+      if (!username || !password) {
+        showMessage("error", "Veuillez remplir tous les champs.");
+        return;
+      }
+
+      btn.disabled = true;
+      btn.classList.add("loading");
+      btn.textContent = "Vérification...";
+
+      try {
+        const res  = await fetch("/login", {    // ← adapte si ta route est différente
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          showMessage("success", data.message || "Connexion réussie !");
+           window.location.href = "/dashboard"; 
+        } else {
+          showMessage("error", data.message || "Identifiants incorrects.");
+        }
+      } catch {
+        showMessage("error", "Impossible de contacter le serveur.");
+      } finally {
+        btn.disabled = false;
+        btn.classList.remove("loading");
+        btn.textContent = "Se connecter";
+      }
+    }
+
+    function showMessage(type, text) {
+      const msg  = document.getElementById("msg");
+      const path = document.getElementById("icon-path");
+      document.getElementById("msg-text").textContent = text;
+      msg.className = "message " + type;
+      path.setAttribute("d", type === "success"
+        ? "M20 6L9 17l-5-5"
+        : "M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm0 6v4m0 4h.01"
+      );
+    }
+  </script>
+</body>
+</html>

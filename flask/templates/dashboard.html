@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Loustique Home — Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0f;
+      --panel: #111118;
+      --border: #1e1e2e;
+      --accent: #7c6aff;
+      --accent2: #ff6ab0;
+      --text: #e8e6f0;
+      --muted: #6b6880;
+      --success: #4ade80;
+      --warning: #fbbf24;
+    }
+
+    body {
+      font-family: 'DM Mono', monospace;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(124,106,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(124,106,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .orb { position: fixed; border-radius: 50%; filter: blur(100px); opacity: 0.08; pointer-events: none; z-index: 0; }
+    .orb1 { width: 600px; height: 600px; background: var(--accent); top: -200px; left: -200px; }
+    .orb2 { width: 400px; height: 400px; background: var(--accent2); bottom: -100px; right: -100px; }
+
+    /* ── TOPBAR ── */
+    header {
+      position: relative; z-index: 10;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 36px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10,10,15,0.8);
+      backdrop-filter: blur(12px);
+      animation: fadeDown 0.5s ease forwards;
+    }
+
+    @keyframes fadeDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 18px; font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .logo span { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+    .header-right { display: flex; align-items: center; gap: 20px; }
+
+    .status-dot {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 11px; color: var(--muted); letter-spacing: 0.05em;
+    }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); box-shadow: 0 0 6px var(--success); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+    .logout {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); background: none; border: 1px solid var(--border);
+      padding: 6px 14px; border-radius: 2px; cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .logout:hover { color: var(--text); border-color: var(--muted); }
+
+    /* ── MAIN ── */
+    main {
+      position: relative; z-index: 1;
+      max-width: 1100px; margin: 0 auto;
+      padding: 40px 36px;
+    }
+
+    .welcome {
+      margin-bottom: 40px;
+      animation: fadeUp 0.5s 0.1s ease both;
+    }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+    .welcome .label { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+    .welcome h1 { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; letter-spacing: -0.02em; }
+    .welcome h1 span { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+    /* ── GRID ── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    .card:nth-child(1) { animation-delay: 0.15s; }
+    .card:nth-child(2) { animation-delay: 0.22s; }
+    .card:nth-child(3) { animation-delay: 0.29s; }
+    .card:nth-child(4) { animation-delay: 0.36s; }
+
+    .card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+
+    .card-label { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+    .card-value { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; letter-spacing: -0.02em; }
+    .card-sub { font-size: 11px; color: var(--muted); margin-top: 6px; }
+
+    .card-icon {
+      position: absolute; top: 20px; right: 20px;
+      width: 32px; height: 32px; opacity: 0.15;
+    }
+
+    /* ── ACTIONS ── */
+    .section-title {
+      font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 16px;
+      display: flex; align-items: center; gap: 10px;
+      animation: fadeUp 0.5s 0.4s ease both;
+    }
+    .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      animation: fadeUp 0.5s 0.45s ease both;
+    }
+
+    .action-btn {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 18px 20px;
+      cursor: pointer;
+      text-align: left;
+      transition: border-color 0.2s, background 0.2s, transform 0.1s;
+      position: relative; overflow: hidden;
+    }
+    .action-btn:hover { border-color: var(--accent); background: rgba(124,106,255,0.05); }
+    .action-btn:active { transform: scale(0.98); }
+
+    .action-btn .a-label {
+      font-family: 'Syne', sans-serif;
+      font-size: 13px; font-weight: 700;
+      letter-spacing: 0.02em; display: block; margin-bottom: 4px;
+    }
+    .action-btn .a-sub { font-size: 10px; color: var(--muted); letter-spacing: 0.05em; }
+
+    .action-btn .a-arrow {
+      position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+      color: var(--muted); font-size: 16px;
+      transition: color 0.2s, right 0.2s;
+    }
+    .action-btn:hover .a-arrow { color: var(--accent); right: 12px; }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed; bottom: 28px; right: 28px;
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: 2px; padding: 12px 18px;
+      font-size: 12px; color: var(--text);
+      display: flex; align-items: center; gap: 10px;
+      transform: translateY(20px); opacity: 0;
+      transition: transform 0.3s, opacity 0.3s;
+      z-index: 100;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); flex-shrink: 0; }
+  </style>
+</head>
+<body>
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+
+  <header>
+    <div class="logo">Loustique <span>Home</span></div>
+    <div class="header-right">
+      <div class="status-dot"><div class="dot"></div> Système actif</div>
+      <button class="logout" onclick="window.location.href='/'">Déconnexion</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="welcome">
+      <div class="label">Tableau de bord</div>
+      <h1>Bienvenue <span>chez vous.</span></h1>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <div class="card-label">Statut</div>
+        <div class="card-value" style="color: var(--success); font-size:20px;">En ligne</div>
+        <div class="card-sub">Serveur opérationnel</div>
+      </div>
+      <div class="card">
+        <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <div class="card-label">Heure locale</div>
+        <div class="card-value" id="clock" style="font-size:22px;">--:--</div>
+        <div class="card-sub" id="date-display">--</div>
+      </div>
+      <div class="card">
+        <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        <div class="card-label">Raspberry Pi</div>
+        <div class="card-value" style="font-size:20px; color: var(--accent);">Actif</div>
+        <div class="card-sub">Flask 3.1</div>
+      </div>
+      <div class="card">
+        <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <div class="card-label">Session</div>
+        <div class="card-value" style="font-size:20px;">Authentifiée</div>
+        <div class="card-sub">Accès autorisé</div>
+      </div>
+    </div>
+
+    <div class="section-title">Actions rapides</div>
+
+    <div class="actions">
+      <button class="action-btn" onclick="callLed()">
+        <span class="a-label">💡 LED</span>
+        <span class="a-sub">Contrôler la LED</span>
+        <span class="a-arrow">›</span>
+      </button>
+      <button class="action-btn" onclick="showToast('Fonction à venir...')">
+        <span class="a-label">⚙️ Paramètres</span>
+        <span class="a-sub">Configuration système</span>
+        <span class="a-arrow">›</span>
+      </button>
+      <button class="action-btn" onclick="showToast('Fonction à venir...')">
+        <span class="a-label">📡 Réseau</span>
+        <span class="a-sub">État de la connexion</span>
+        <span class="a-arrow">›</span>
+      </button>
+    </div>
+  </main>
+
+  <div class="toast" id="toast">
+    <div class="toast-dot"></div>
+    <span id="toast-text">Action effectuée</span>
+  </div>
+
+  <script>
+    // Horloge
+    function updateClock() {
+      const now = new Date();
+      document.getElementById("clock").textContent =
+        now.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+      document.getElementById("date-display").textContent =
+        now.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    // LED
+    async function callLed() {
+      try {
+        const res = await fetch("/led");
+        const text = await res.text();
+        showToast("LED activée !");
+      } catch {
+        showToast("Erreur lors de l'appel LED.");
+      }
+    }
+
+    // Toast
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      document.getElementById("toast-text").textContent = msg;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 3000);
+    }
+  </script>
+</body>
+</html>
