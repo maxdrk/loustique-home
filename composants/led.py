@@ -1,4 +1,4 @@
-#code fonctionnel a voir avec les autres pour amélioration
+
 from gpiozero import LED
 from time import sleep
 
