@@ -41,6 +41,22 @@ else
 fi
 
 cat << 'EOF'
+=================================
+Vérification des certificats SSL
+==================================
+EOF
+
+bash web_secu/ssl.sh
+
+cat << 'EOF'
+=============================
+Vérification du daemin Avahi
+============================
+EOF
+bash web_secu/avahi.sh
+
+
+cat << 'EOF'
 ================================
 Lancement du serveur FLASK
 ================================
