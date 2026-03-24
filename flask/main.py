@@ -67,5 +67,16 @@ def get_users():
     users = auth.get_users()
     return jsonify({"success": True, "users": users})
 
+import os
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(
+        host="0.0.0.0",
+        port=5000,
+        ssl_context=(
+            os.path.join(BASE_DIR, 'web_secu', 'ssl', 'cert.pem'),
+            os.path.join(BASE_DIR, 'web_secu', 'ssl', 'key.pem')
+        )
+    )
