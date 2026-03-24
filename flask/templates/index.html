@@ -156,12 +156,12 @@
 
     <div class="field">
       <label for="username">Identifiant</label>
-      <input type="text" id="username" placeholder="votre_nom" autocomplete="username" />
+      <input type="text" id="username" placeholder="Nom du loustique" autocomplete="username" />
     </div>
 
     <div class="field">
       <label for="password">Mot de passe</label>
-      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" />
+      <input type="password" id="password" placeholder="Le secret du loustique" autocomplete="current-password" />
     </div>
 
     <button id="btn" onclick="handleLogin()">Se connecter</button>
@@ -200,7 +200,7 @@
       btn.textContent = "Vérification...";
 
       try {
-        const res  = await fetch("/login", {    // ← adapte si ta route est différente
+        const res  = await fetch("/login", {    
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, password })

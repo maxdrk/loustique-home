@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logs — Loustiques</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #0f0f0f;
+            --surface: #181818;
+            --surface2: #222222;
+            --border: rgba(255,255,255,0.08);
+            --border-hover: rgba(255,255,255,0.18);
+            --text: #f0ede8;
+            --muted: #888880;
+            --accent: #c8f060;
+            --accent-dim: rgba(200,240,96,0.12);
+            --danger: #ff5f57;
+            --danger-dim: rgba(255,95,87,0.12);
+            --success: #30d158;
+            --warning: #ff9f0a;
+            --mono: 'Space Mono', monospace;
+            --sans: 'DM Sans', sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--sans);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        aside {
+            width: 220px;
+            min-height: 100vh;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 1.25rem;
+            position: fixed;
+            top: 0; left: 0; bottom: 0;
+        }
+
+        .logo {
+            font-family: var(--mono);
+            font-size: 13px;
+            color: var(--accent);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo span {
+            display: block;
+            font-size: 10px;
+            color: var(--muted);
+            margin-top: 4px;
+            letter-spacing: 0.06em;
+        }
+
+        nav a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-size: 13.5px;
+            color: var(--muted);
+            text-decoration: none;
+            margin-bottom: 2px;
+            transition: all 0.15s;
+        }
+
+        nav a.active, nav a:hover {
+            background: var(--accent-dim);
+            color: var(--accent);
+        }
+
+        nav a svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+        .sidebar-footer {
+            margin-top: auto;
+            font-size: 12px;
+            color: var(--muted);
+            font-family: var(--mono);
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        main {
+            margin-left: 220px;
+            flex: 1;
+            padding: 2.5rem 3rem;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+
+        .page-header h1 {
+            font-family: var(--mono);
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .page-header p { font-size: 14px; color: var(--muted); }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .live-label {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 14px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            background: var(--surface);
+            color: var(--muted);
+            transition: all 0.15s;
+        }
+
+        .btn:hover { border-color: var(--border-hover); color: var(--text); }
+
+        .btn-danger {
+            color: var(--danger);
+            border-color: rgba(255,95,87,0.2);
+            background: var(--danger-dim);
+        }
+
+        .btn-danger:hover { background: rgba(255,95,87,0.2); }
+
+        .filters {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .filter-btn {
+            padding: 5px 12px;
+            border-radius: 5px;
+            border: 1px solid var(--border);
+            background: transparent;
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--muted);
+            cursor: pointer;
+            transition: all 0.15s;
+            letter-spacing: 0.05em;
+        }
+
+        .filter-btn.active { background: var(--accent-dim); color: var(--accent); border-color: rgba(200,240,96,0.25); }
+        .filter-btn[data-level="ERROR"].active { background: var(--danger-dim); color: var(--danger); border-color: rgba(255,95,87,0.25); }
+        .filter-btn[data-level="WARNING"].active { background: rgba(255,159,10,0.1); color: var(--warning); border-color: rgba(255,159,10,0.25); }
+        .filter-btn[data-level="INFO"].active { background: rgba(48,209,88,0.08); color: var(--success); border-color: rgba(48,209,88,0.25); }
+
+        .log-container {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .log-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .log-count {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .log-scroll {
+            height: calc(100vh - 280px);
+            overflow-y: auto;
+            padding: 0;
+        }
+
+        .log-scroll::-webkit-scrollbar { width: 4px; }
+        .log-scroll::-webkit-scrollbar-track { background: transparent; }
+        .log-scroll::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 2px; }
+
+        .log-line {
+            display: grid;
+            grid-template-columns: 160px 70px 80px 1fr;
+            gap: 0;
+            padding: 7px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            font-family: var(--mono);
+            font-size: 12px;
+            transition: background 0.1s;
+            align-items: center;
+        }
+
+        .log-line:hover { background: var(--surface2); }
+        .log-line:last-child { border-bottom: none; }
+
+        .log-time { color: var(--muted); font-size: 11px; }
+        .log-name { color: var(--muted); font-size: 11px; }
+
+        .log-level {
+            font-size: 10px;
+            padding: 2px 7px;
+            border-radius: 4px;
+            text-align: center;
+            width: fit-content;
+            letter-spacing: 0.06em;
+        }
+
+        .level-INFO { background: rgba(48,209,88,0.1); color: var(--success); }
+        .level-ERROR { background: var(--danger-dim); color: var(--danger); }
+        .level-WARNING { background: rgba(255,159,10,0.1); color: var(--warning); }
+        .level-DEBUG { background: var(--surface2); color: var(--muted); }
+
+        .log-msg { color: var(--text); padding-left: 12px; word-break: break-all; }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 200px;
+            color: var(--muted);
+            font-family: var(--mono);
+            font-size: 12px;
+            gap: 8px;
+        }
+
+        .search-input {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 6px 12px;
+            color: var(--text);
+            font-family: var(--mono);
+            font-size: 12px;
+            outline: none;
+            width: 220px;
+            transition: border-color 0.15s;
+        }
+
+        .search-input:focus { border-color: var(--accent); }
+        .search-input::placeholder { color: var(--muted); }
+    </style>
+</head>
+<body>
+
+<aside>
+    <div class="logo">
+        Loustiques
+        <span>panneau admin</span>
+    </div>
+    <nav>
+        <a href="/admin">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5" r="2.5"/><path d="M3 13c0-2.76 2.24-5 5-5s5 2.24 5 5"/></svg>
+            Utilisateurs
+        </a>
+        <a href="/admin/logs" class="active">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 8h6M5 5h6M5 11h4"/></svg>
+            Logs
+        </a>
+        <a href="#">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2"/></svg>
+            Système
+        </a>
+    </nav>
+    <div class="sidebar-footer">
+        v0.1.0 — local
+    </div>
+</aside>
+
+<main>
+    <div class="page-header">
+        <div>
+            <h1>logs</h1>
+            <p>Flux en temps réel de <code style="font-family:var(--mono);font-size:12px;color:var(--muted)">/var/log/loustique.log</code></p>
+        </div>
+        <div class="controls">
+            <div class="live-dot" id="live-dot"></div>
+            <span class="live-label" id="live-label">live</span>
+            <button class="btn" onclick="toggleLive()">
+                <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="4" height="10"/><rect x="9" y="3" width="4" height="10"/></svg>
+                <span id="toggle-label">Pause</span>
+            </button>
+            <button class="btn btn-danger" onclick="clearView()">
+                <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h10M6 4V2h4v2M5 4l1 10h4l1-10"/></svg>
+                Vider la vue
+            </button>
+        </div>
+    </div>
+
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
+        <div class="filters">
+            <button class="filter-btn active" data-level="ALL" onclick="setFilter('ALL', this)">Tous</button>
+            <button class="filter-btn" data-level="INFO" onclick="setFilter('INFO', this)">INFO</button>
+            <button class="filter-btn" data-level="WARNING" onclick="setFilter('WARNING', this)">WARNING</button>
+            <button class="filter-btn" data-level="ERROR" onclick="setFilter('ERROR', this)">ERROR</button>
+            <button class="filter-btn" data-level="DEBUG" onclick="setFilter('DEBUG', this)">DEBUG</button>
+        </div>
+        <input class="search-input" type="text" placeholder="Rechercher..." oninput="setSearch(this.value)">
+    </div>
+
+    <div class="log-container">
+        <div class="log-toolbar">
+            <span class="log-count" id="log-count">0 lignes</span>
+            <span class="log-count" id="last-refresh">—</span>
+        </div>
+        <div class="log-scroll" id="log-scroll">
+            <div class="empty-state" id="empty-state">chargement...</div>
+        </div>
+    </div>
+</main>
+
+<script>
+let allLogs = [];
+let activeFilter = 'ALL';
+let searchQuery = '';
+let liveEnabled = true;
+let interval = null;
+
+function parseLine(line) {
+    const match = line.trim().match(/^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d+) - (\S+) - (\w+) - (.+)$/);
+    if (!match) return null;
+    return { time: match[1], name: match[2], level: match[3], msg: match[4].trim() };
+}
+
+function renderLogs() {
+    const scroll = document.getElementById('log-scroll');
+    const empty = document.getElementById('empty-state');
+    const count = document.getElementById('log-count');
+
+    let filtered = allLogs.filter(l => {
+        if (activeFilter !== 'ALL' && l.level !== activeFilter) return false;
+        if (searchQuery && !l.msg.toLowerCase().includes(searchQuery) && !l.name.toLowerCase().includes(searchQuery)) return false;
+        return true;
+    });
+
+    count.textContent = `${filtered.length} ligne${filtered.length !== 1 ? 's' : ''}`;
+
+    if (filtered.length === 0) {
+        scroll.innerHTML = '';
+        empty.style.display = 'flex';
+        scroll.appendChild(empty);
+        return;
+    }
+
+    empty.style.display = 'none';
+    const atBottom = scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight < 40;
+
+    scroll.innerHTML = filtered.map(l => `
+        <div class="log-line">
+            <span class="log-time">${l.time.split(',')[0]}</span>
+            <span class="log-name">${l.name}</span>
+            <span class="log-level level-${l.level}">${l.level}</span>
+            <span class="log-msg">${escHtml(l.msg)}</span>
+        </div>
+    `).join('');
+
+    if (atBottom) scroll.scrollTop = scroll.scrollHeight;
+}
+
+function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function fetchLogs() {
+    fetch('/admin/logs/data')
+        .then(r => r.json())
+        .then(data => {
+            if (!data.success) return;
+            allLogs = data.logs.map(parseLine).filter(Boolean);
+            renderLogs();
+            const now = new Date();
+            document.getElementById('last-refresh').textContent =
+                `màj ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
+        })
+        .catch(() => {
+            document.getElementById('last-refresh').textContent = 'erreur de connexion';
+        });
+}
+
+function setFilter(level, btn) {
+    activeFilter = level;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderLogs();
+}
+
+function setSearch(val) {
+    searchQuery = val.toLowerCase();
+    renderLogs();
+}
+
+function toggleLive() {
+    liveEnabled = !liveEnabled;
+    const dot = document.getElementById('live-dot');
+    const label = document.getElementById('live-label');
+    const btn = document.getElementById('toggle-label');
+    if (liveEnabled) {
+        dot.style.animationPlayState = 'running';
+        dot.style.background = 'var(--success)';
+        label.textContent = 'live';
+        btn.textContent = 'Pause';
+        startInterval();
+    } else {
+        dot.style.animationPlayState = 'paused';
+        dot.style.background = 'var(--muted)';
+        label.textContent = 'pausé';
+        btn.textContent = 'Reprendre';
+        clearInterval(interval);
+    }
+}
+
+function clearView() {
+    allLogs = [];
+    renderLogs();
+}
+
+function startInterval() {
+    clearInterval(interval);
+    interval = setInterval(fetchLogs, 5000);
+}
+
+fetchLogs();
+startInterval();
+</script>
+</body>
+</html>

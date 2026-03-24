@@ -4,6 +4,7 @@ import bcrypt
 from dotenv import load_dotenv
 from datetime import datetime
 import os
+from log import log
 
 load_dotenv()
 
@@ -20,32 +21,28 @@ def init():
         return conn
 
     except pymysql.err.OperationalError as e:
-        print(f"❌ Erreur de connexion : {e}")
+        print(f"Erreur de connexion : {e}")
+        log.error(f"Erreur de connexion : {e}")
         return None
 
-def add():
+def add_user(username, password, role):
     conn = init()
     if conn is None:
         return False
-
-    username = input("Quel est l'username du nouvel utilisateur : ")
-    password = getpass.getpass("Quel est le password : ")
-
-    # Hashage du mot de passe avec bcrypt
+    
     hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    
 
     try:
         cursor = conn.cursor()
-        requete = "INSERT INTO Auth (username, password, created_at) VALUES (%s, %s, %s)"
-        cursor.execute(requete, (username, hashed, datetime.now()))
+        requete = "INSERT INTO Auth (username, password, Fonctions, created_at) VALUES (%s, %s, %s, %s)"
+        cursor.execute(requete, (username, hashed, role, datetime.now()))
         conn.commit()
-        print(f"✅ Utilisateur '{username}' ajouté avec succès !")
-
+        log.info(f"Utilisateur '{username}' ({role}) ajouté")
+        return True
     except pymysql.err.IntegrityError:
-        print("❌ Cet utilisateur existe déjà")
-
+        log.error(f"Utilisateur existant : {username}")
+        return False
     finally:
         cursor.close()
         conn.close()
-
-add()

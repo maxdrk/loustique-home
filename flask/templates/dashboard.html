@@ -156,16 +156,17 @@
       animation: fadeUp 0.5s 0.45s ease both;
     }
 
-    .action-btn {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 2px;
-      padding: 18px 20px;
-      cursor: pointer;
-      text-align: left;
-      transition: border-color 0.2s, background 0.2s, transform 0.1s;
-      position: relative; overflow: hidden;
-    }
+   .action-btn {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 18px 20px;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.2s, background 0.2s, transform 0.1s;
+    position: relative; overflow: hidden;
+    color: var(--text); /* ← ajouter ça */
+}
     .action-btn:hover { border-color: var(--accent); background: rgba(124,106,255,0.05); }
     .action-btn:active { transform: scale(0.98); }
 
@@ -261,6 +262,11 @@
         <span class="a-sub">État de la connexion</span>
         <span class="a-arrow">›</span>
       </button>
+      <button class="action-btn" onclick="go_admin('Fonction à venir...')">
+        <span class="a-label">Administration</span>
+        <span class="a-sub">Administrer les loustiques</span>
+        <span class="a-arrow">›</span>
+      </button>
     </div>
   </main>
 
@@ -270,7 +276,7 @@
   </div>
 
   <script>
-    // Horloge
+    
     function updateClock() {
       const now = new Date();
       document.getElementById("clock").textContent =
@@ -281,10 +287,13 @@
     updateClock();
     setInterval(updateClock, 1000);
 
-    // LED
+  
     async function callLed() {
       try {
-        const res = await fetch("/led");
+        const res = await fetch('/led', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' }
+});
         const text = await res.text();
         showToast("LED activée !");
       } catch {
@@ -292,7 +301,9 @@
       }
     }
 
-    // Toast
+    function go_admin (){
+      window.location.href = "/admin"; 
+    }
     function showToast(msg) {
       const toast = document.getElementById("toast");
       document.getElementById("toast-text").textContent = msg;

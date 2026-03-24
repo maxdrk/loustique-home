@@ -47,4 +47,6 @@ Lancement du serveur FLASK
 EOF
 
 sleep 1
+touch /var/log/loustique.log
+chown ${SUDO_USER}:${SUDO_USER} /var/log/loustique.log
 venv/bin/python ./flask/main.py
