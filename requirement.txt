@@ -1,5 +1,4 @@
 pymysql
 gpiozero
 bcrypt 
-#getpass
 dotenv
