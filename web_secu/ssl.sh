@@ -14,6 +14,9 @@ EOF
 
 EOF
 
+mkdir ssl
+chown ${SUDO_USER}:${SUDO_USER} ssl/
+
 if [ -f "web_secu/ssl/cert.pem" ] && [ -f "web_secu/ssl/key.pem" ]; then
     echo "Certificat SSL déjà existant, on passe."
 else
