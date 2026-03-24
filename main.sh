@@ -109,7 +109,7 @@ fi
 # ----------------------------
 # 4. Créer un nouveau venv ?
 # ----------------------------
-print_step "➕ Créer un nouvel environnement virtuel ?"
+print_step " Créer un nouvel environnement virtuel ?"
 echo "Voulez-vous créer un nouveau venv ? (o/n)"
 read -r CREATE_VENV
 
@@ -125,10 +125,10 @@ if [[ "$CREATE_VENV" =~ ^[oO]$ ]]; then
             echo "$VENV_PATH" > ./.venv_path
             echo "Chemin enregistré dans .venv_path"
 
-            # Mise à jour de pip dans le venv
+         
             "$VENV_PATH/bin/pip" install --upgrade pip
 
-            # Installation des dépendances si requirements.txt présent
+           
             if [ -f "./requirements.txt" ]; then
                 echo "Installation des dépendances depuis requirements.txt..."
                 "$VENV_PATH/bin/pip" install -r ./requirements.txt
