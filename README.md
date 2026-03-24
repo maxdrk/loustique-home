@@ -27,6 +27,12 @@ loustiques-home/
 │       ├── dashboard.html # Tableau de bord principal
 │       ├── admin.html     # Panneau d'administration
 │       └── log.html       # Visualisation des logs en temps réel
+├── web_secu/
+│   ├── ssl.sh             # Génération du certificat SSL auto-signé
+│   ├── avahi.sh           # Installation et démarrage du service mDNS
+│   └── ssl/
+│       ├── cert.pem       # Certificat SSL (généré automatiquement)
+│       └── key.pem        # Clé privée SSL (générée automatiquement)
 ├── run_flask.sh           # Script de démarrage du serveur
 ├── requirement.txt        # Dépendances Python
 └── .env                   # Variables d'environnement (non versionné)
@@ -38,13 +44,38 @@ loustiques-home/
 
 ### `run_flask.sh`
 
-Script bash de démarrage. Il vérifie la présence de Python 3 et de Flask, crée le fichier de log `/var/log/loustique.log` avec les bonnes permissions, puis lance le serveur Flask.
+Script bash de démarrage. Il vérifie la présence de Python 3 et de Flask, génère le certificat SSL si absent, démarre Avahi pour le DNS local, crée le fichier de log `/var/log/loustique.log` avec les bonnes permissions, puis lance le serveur Flask.
 
-À exécuter avec `sudo` pour pouvoir créer le fichier de log :
+À exécuter avec `sudo` pour pouvoir créer le fichier de log et installer les services :
 
 ```bash
 sudo bash run_flask.sh
 ```
+
+---
+
+### `web_secu/ssl.sh`
+
+Génère un certificat SSL auto-signé (`cert.pem` + `key.pem`) dans `web_secu/ssl/`. Le certificat est valable 365 jours et est émis pour `loustiques.local`. Si le certificat existe déjà, le script ne le régénère pas.
+
+```
+C=BE / ST=Brabant Wallon / L=Louvain-La-Neuve / O=Les Loustiques / OU=EPHEC / CN=loustiques.local
+```
+
+---
+
+### `web_secu/avahi.sh`
+
+Installe et démarre **Avahi** (implémentation mDNS) sur le Raspberry Pi. Une fois actif, le Pi est automatiquement accessible via son hostname suivi de `.local` sur tout le réseau local, sans rien modifier sur les machines clientes.
+
+Pour changer le hostname du Pi :
+
+```bash
+sudo hostnamectl set-hostname loustiques
+sudo reboot
+```
+
+Le Pi sera ensuite accessible via `https://loustiques.local:5000`.
 
 ---
 
@@ -135,7 +166,7 @@ Interface de visualisation des logs en temps réel. Se rafraîchit automatiqueme
 - MySQL / MariaDB
 - Un environnement virtuel Python (`venv`)
 
-  > **Note :** Le script `run_flask.sh` s'occupe automatiquement de vérifier et installer les dépendances nécessaires. Cette liste est fournie par souci de transparence et pour les installations manuelles.
+> **Note :** Le script `run_flask.sh` s'occupe automatiquement de vérifier et installer les dépendances nécessaires. Cette liste est fournie par souci de transparence et pour les installations manuelles.
 
 ### Étapes
 
@@ -158,6 +189,18 @@ cp .env.example .env
 # Lancer le serveur
 sudo bash run_flask.sh
 ```
+
+---
+
+## Accès à l'interface
+
+Une fois le serveur lancé, l'interface est accessible via :
+
+```
+https://<hostname>.local:5000
+```
+
+Le certificat étant auto-signé, le navigateur affichera un avertissement de sécurité. Il suffit d'accepter l'exception pour continuer.
 
 ---
 
