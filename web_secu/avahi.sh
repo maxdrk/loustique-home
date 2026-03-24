@@ -1,7 +1,5 @@
 #!/bin/bash
 
-
-
 if systemctl is-active --quiet avahi-daemon; then
     echo "Avahi est déjà actif  accessible via $(hostname).local"
 else
