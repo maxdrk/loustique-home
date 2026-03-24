@@ -135,6 +135,8 @@ Interface de visualisation des logs en temps réel. Se rafraîchit automatiqueme
 - MySQL / MariaDB
 - Un environnement virtuel Python (`venv`)
 
+  > **Note :** Le script `run_flask.sh` s'occupe automatiquement de vérifier et installer les dépendances nécessaires. Cette liste est fournie par souci de transparence et pour les installations manuelles.
+
 ### Étapes
 
 ```bash
