@@ -8,7 +8,7 @@ import time
 from gpiozero import LED, Button, PWMOutputDevice, AngularServo
 from gpiozero import MCP3008  
 
-# LEDs
+
 led_verte = LED(12)
 led_verte_luminosite = LED(25)
 led_rouge = LED(13)
