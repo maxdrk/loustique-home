@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify
+from flask_talisman import Talisman
 from led import led
 import os
 from add_user import add_user
@@ -6,7 +7,8 @@ import auth
 import re
 
 app = Flask(__name__)
-
+Talisman(app, force_https=True,
+content_security_policy=False )
 current_user = None
 
 @app.route("/")
@@ -74,7 +76,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
-        port=5000,
+        port=443,
         ssl_context=(
             os.path.join(BASE_DIR, 'web_secu', 'ssl', 'cert.pem'),
             os.path.join(BASE_DIR, 'web_secu', 'ssl', 'key.pem')
