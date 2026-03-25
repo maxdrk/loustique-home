@@ -28,20 +28,6 @@ def activate_alarm():
         buzzer.value = 0
         time.sleep(0.5)
 
-def checkPin(guess):
-    if guess == secret_pin:
-        display_message("Code correct", guess)
-        led_verte.on()
-        servo.angle = 90
-        time.sleep(2)
-        servo.angle = 0
-        led_verte.off()
-    else:
-        display_message("Code incorrect", guess)
-        led_rouge.on()
-        activate_alarm()
-        time.sleep(2)
-        led_rouge.off()
 
 def pir_detection():
     while True:
