@@ -54,6 +54,25 @@ fi
 echo "Système mis à jour"
 sleep 1
 
+
+#----------------------------
+# 2. Installation de MariaDB x phpmyadmin
+#------------------------------
+bash DB/main.sh
+
+
+#-------------------------------
+# 3. Exportation des DB
+#--------------------------------
+read -p "Voulez-vous exporter des DB existantes ? (y/n) : " choix
+
+if [ "$choix" = "y" ]; then
+    bash "$(dirname "$0")/export_db.sh"
+fi
+
+echo 'je sais ya un problème de numéro mais wola aller lire le script db/export_db.sh je suis claquax au sol sur terre'
+
+
 # ----------------------------
 # 2. Installation de Python
 # ----------------------------
@@ -66,6 +85,8 @@ PYTHON_VERSION=$(python3 --version 2>&1)
 echo " $PYTHON_VERSION installé"
 echo " $PYTHON_VERSION installé"
 sleep 1
+
+
 
 # ----------------------------
 # 3. Recherche des venvs existants
