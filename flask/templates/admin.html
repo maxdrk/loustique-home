@@ -3,33 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin — Loustiques</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <title>Loustiques Home - Admin</title>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        :root {
-            --bg: #0f0f0f;
-            --surface: #181818;
-            --surface2: #222222;
-            --border: rgba(255,255,255,0.08);
-            --border-hover: rgba(255,255,255,0.18);
-            --text: #f0ede8;
-            --muted: #888880;
-            --accent: #c8f060;
-            --accent-dim: rgba(200,240,96,0.12);
-            --danger: #ff5f57;
-            --danger-dim: rgba(255,95,87,0.12);
-            --success: #30d158;
-            --success-dim: rgba(48,209,88,0.1);
-            --mono: 'Space Mono', monospace;
-            --sans: 'DM Sans', sans-serif;
-        }
-
         body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: var(--sans);
+            font-family: system-ui, sans-serif;
+            background: #1f1f1f;
+            color: #f0f0f0;
             min-height: 100vh;
             display: flex;
         }
@@ -37,8 +18,8 @@
         aside {
             width: 220px;
             min-height: 100vh;
-            background: var(--surface);
-            border-right: 1px solid var(--border);
+            background: #1a1a1a;
+            border-right: 1px solid #2e2e2e;
             display: flex;
             flex-direction: column;
             padding: 2rem 1.25rem;
@@ -47,22 +28,20 @@
         }
 
         .logo {
-            font-family: var(--mono);
-            font-size: 13px;
-            color: var(--accent);
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
+            font-size: 20px;
+            font-weight: 700;
+            color: #f0f0f0;
             margin-bottom: 2.5rem;
             padding-bottom: 1.5rem;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid #2e2e2e;
         }
 
         .logo span {
             display: block;
-            font-size: 10px;
-            color: var(--muted);
+            font-size: 15px;
+            color: #666;
             margin-top: 4px;
-            letter-spacing: 0.06em;
+            font-weight: 400;
         }
 
         nav a {
@@ -71,27 +50,26 @@
             gap: 10px;
             padding: 8px 10px;
             border-radius: 6px;
-            font-size: 13.5px;
-            color: var(--muted);
+            font-size: 13px;
+            color: #888;
             text-decoration: none;
             margin-bottom: 2px;
             transition: all 0.15s;
         }
 
         nav a.active, nav a:hover {
-            background: var(--accent-dim);
-            color: var(--accent);
+            background: #2e2e3a;
+            color: #2563eb;
         }
 
         nav a svg { width: 15px; height: 15px; flex-shrink: 0; }
 
         .sidebar-footer {
             margin-top: auto;
-            font-size: 12px;
-            color: var(--muted);
-            font-family: var(--mono);
+            font-size: 15px;
+            color: #555;
             padding-top: 1rem;
-            border-top: 1px solid var(--border);
+            border-top: 1px solid #2e2e2e;
         }
 
         main {
@@ -101,37 +79,32 @@
             max-width: 900px;
         }
 
-        .page-header {
-            margin-bottom: 2.5rem;
+        .page-header { 
+            margin-bottom: 2.5rem; 
         }
-
         .page-header h1 {
-            font-family: var(--mono);
             font-size: 22px;
             font-weight: 700;
-            color: var(--text);
-            margin-bottom: 4px;
+            margin-bottom: 4px; 
         }
-
         .page-header p {
             font-size: 14px;
-            color: var(--muted);
+            color: #888; 
         }
 
         .card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
+            background: #2a2a2a;
+            border: 1px solid #333;
+            border-radius: 8px;
             padding: 1.75rem;
             margin-bottom: 1.5rem;
         }
 
         .card-title {
-            font-family: var(--mono);
-            font-size: 11px;
+            font-size: 15px;
             letter-spacing: 0.1em;
             text-transform: uppercase;
-            color: var(--muted);
+            color: #666;
             margin-bottom: 1.25rem;
         }
 
@@ -144,171 +117,119 @@
         .form-group {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 6px; 
         }
-
-        .form-group.full { grid-column: 1 / -1; }
+        .form-group.full {
+            grid-column: 1 / -1; 
+        }
 
         label {
             font-size: 12px;
-            color: var(--muted);
-            font-family: var(--mono);
-            letter-spacing: 0.05em;
+            color: #888; 
         }
 
         input[type="text"],
-        input[type="password"] {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 7px;
+        input[type="password"],
+        select {
+            background: #333;
+            border: 1px solid #3a3a3a;
+            border-radius: 6px;
             padding: 10px 14px;
-            color: var(--text);
-            font-family: var(--mono);
+            color: #f0f0f0;
+            font-family: inherit;
             font-size: 13px;
             outline: none;
-            transition: border-color 0.15s;
             width: 100%;
+            transition: border-color 0.15s;
+            appearance: none;
         }
 
-        input:focus {
-            border-color: var(--accent);
-        }
+        input:focus, select:focus { border-color: #2563eb; }
+        input::placeholder { color: #555; }
 
         .btn {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 10px 20px;
-            border-radius: 7px;
+            padding: 9px 18px;
+            border-radius: 6px;
             border: none;
-            font-family: var(--mono);
-            font-size: 12px;
-            letter-spacing: 0.05em;
+            font-family: inherit;
+            font-size: 13px;
             cursor: pointer;
             transition: all 0.15s;
         }
 
-        .btn-primary {
-            background: var(--accent);
-            color: #0f0f0f;
-            font-weight: 700;
-        }
-
-        .btn-primary:hover { background: #d4f570; }
+        .btn-primary { background: #2563eb; color: #fff; font-weight: 600; }
+        .btn-primary:hover { background: #1d4ed8; }
 
         .btn-danger {
-            background: var(--danger-dim);
-            color: var(--danger);
-            border: 1px solid rgba(255,95,87,0.2);
+            background: transparent;
+            color: #f87171;
+            border: 1px solid rgba(248,113,113,0.3);
+            font-size: 12px;
+            padding: 6px 14px;
         }
+        .btn-danger:hover { background: rgba(248,113,113,0.1); }
 
-        .btn-danger:hover { background: rgba(255,95,87,0.2); }
+        .form-actions { display: flex; justify-content: flex-end; margin-top: 1.25rem; }
 
-        .form-actions {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 1.25rem;
-        }
-
-        .user-list { display: flex; flex-direction: column; gap: 0; }
+        .user-list { display: flex; flex-direction: column; }
 
         .user-row {
             display: flex;
             align-items: center;
             padding: 12px 0;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid #333;
             gap: 14px;
-            transition: background 0.1s;
         }
-
         .user-row:last-child { border-bottom: none; }
 
         .avatar {
-            width: 36px;
-            height: 36px;
+            width: 36px; height: 36px;
             border-radius: 50%;
-            background: var(--accent-dim);
-            border: 1px solid rgba(200,240,96,0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: var(--mono);
-            font-size: 11px;
-            color: var(--accent);
+            background: #2e2e3a;
+            border: 1px solid #3a3a4a;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; font-weight: 600;
+            color: #2563eb;
             flex-shrink: 0;
         }
 
         .user-info { flex: 1; }
-
-        .user-name {
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text);
-            margin-bottom: 2px;
-        }
-
-        .user-meta {
-            font-size: 11px;
-            color: var(--muted);
-            font-family: var(--mono);
-        }
+        .user-name { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+        .user-meta { font-size: 11px; color: #666; }
 
         .badge {
             font-size: 10px;
-            font-family: var(--mono);
             padding: 3px 8px;
             border-radius: 4px;
-            letter-spacing: 0.05em;
         }
 
-        .badge-admin {
-            background: var(--accent-dim);
-            color: var(--accent);
-            border: 1px solid rgba(200,240,96,0.2);
-        }
-
-        .badge-user {
-            background: var(--surface2);
-            color: var(--muted);
-            border: 1px solid var(--border);
-        }
+        .badge-admin { background: rgba(37,99,235,0.15); color: #2563eb; border: 1px solid rgba(37,99,235,0.3); }
+        .badge-user { background: #333; color: #888; border: 1px solid #3a3a3a; }
 
         .toast {
             position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background: var(--surface);
-            border: 1px solid var(--border);
+            bottom: 2rem; right: 2rem;
+            background: #2a2a2a;
+            border: 1px solid #333;
             border-radius: 8px;
             padding: 12px 18px;
             font-size: 13px;
-            font-family: var(--mono);
-            color: var(--text);
+            color: #f0f0f0;
             transform: translateY(20px);
             opacity: 0;
             transition: all 0.25s;
             pointer-events: none;
             z-index: 999;
         }
-
         .toast.show { transform: translateY(0); opacity: 1; }
-        .toast.success { border-color: rgba(48,209,88,0.3); color: var(--success); }
-        .toast.error { border-color: rgba(255,95,87,0.3); color: var(--danger); }
+        .toast.success { border-color: rgba(74,222,128,0.3); color: #4ade80; }
+        .toast.error { border-color: rgba(248,113,113,0.3); color: #f87171; }
 
-        .strength-bar {
-            height: 3px;
-            background: var(--surface2);
-            border-radius: 2px;
-            margin-top: 6px;
-            overflow: hidden;
-        }
-
-        .strength-fill {
-            height: 100%;
-            border-radius: 2px;
-            transition: width 0.3s, background 0.3s;
-            width: 0%;
-        }
+        .strength-bar { height: 3px; background: #333; border-radius: 2px; margin-top: 6px; overflow: hidden; }
+        .strength-fill { height: 100%; border-radius: 2px; transition: width 0.3s, background 0.3s; width: 0%; }
     </style>
 </head>
 <body>
@@ -316,7 +237,7 @@
 <aside>
     <div class="logo">
         Loustiques
-        <span>panneau admin</span>
+        <span>Panneau admin</span>
     </div>
     <nav>
         <a href="#" class="active">
@@ -332,14 +253,12 @@
             Système
         </a>
     </nav>
-    <div class="sidebar-footer">
-        v0.1.0 — local
-    </div>
+    <div class="sidebar-footer">v0.1.0 — local</div>
 </aside>
 
 <main>
     <div class="page-header">
-        <h1>utilisateurs</h1>
+        <h1>Utilisateurs</h1>
         <p>Créer et gérer les comptes d'accès.</p>
     </div>
 
@@ -347,23 +266,23 @@
         <div class="card-title">Créer un utilisateur</div>
         <div class="form-grid">
             <div class="form-group">
-                <label>nom d'utilisateur</label>
+                <label>Nom d'utilisateur</label>
                 <input type="text" id="new-username" placeholder="ex: maxime" autocomplete="off">
             </div>
             <div class="form-group">
-                <label>rôle</label>
-                <select id="new-role" style="background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:10px 14px;color:var(--text);font-family:var(--mono);font-size:13px;outline:none;width:100%;appearance:none;">
+                <label>Rôle</label>
+                <select id="new-role">
                     <option value="user">user</option>
                     <option value="admin">admin</option>
                 </select>
             </div>
             <div class="form-group">
-                <label>mot de passe</label>
+                <label>Mot de passe</label>
                 <input type="password" id="new-password" placeholder="••••••••" oninput="checkStrength(this.value)">
                 <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
             </div>
             <div class="form-group">
-                <label>confirmer</label>
+                <label>Confirmer</label>
                 <input type="password" id="confirm-password" placeholder="••••••••">
             </div>
         </div>
@@ -377,17 +296,7 @@
 
     <div class="card">
         <div class="card-title">Comptes existants</div>
-        <div class="user-list" id="user-list">
-            <div class="user-row">
-                <div class="avatar">MA</div>
-                <div class="user-info">
-                    <div class="user-name">maxime</div>
-                    <div class="user-meta">créé le 24/03/2026</div>
-                </div>
-                <span class="badge badge-admin">admin</span>
-                <button class="btn btn-danger" onclick="deleteUser(this, 'maxime')">Supprimer</button>
-            </div>
-        </div>
+        <div class="user-list" id="user-list"></div>
     </div>
 </main>
 
@@ -408,7 +317,7 @@ function checkStrength(val) {
     if (/[A-Z]/.test(val)) score++;
     if (/[0-9]/.test(val)) score++;
     if (/[^A-Za-z0-9]/.test(val)) score++;
-    const colors = ['#ff5f57', '#ff9f0a', '#ffd60a', '#30d158'];
+    const colors = ['#f87171', '#fb923c', '#facc15', '#4ade80'];
     fill.style.width = (score * 25) + '%';
     fill.style.background = colors[score - 1] || 'transparent';
 }
@@ -443,6 +352,7 @@ function createUser() {
     })
     .catch(() => showToast('Erreur réseau', 'error'));
 }
+
 function loadUsers() {
     fetch('/admin/get_users')
         .then(r => r.json())
@@ -454,7 +364,8 @@ function loadUsers() {
         });
 }
 
-loadUsers(); 
+loadUsers();
+
 function addUserRow(username, role) {
     const initials = username.slice(0, 2).toUpperCase();
     const today = new Date().toLocaleDateString('fr-FR');
