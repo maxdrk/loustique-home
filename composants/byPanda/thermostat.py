@@ -1,6 +1,7 @@
 import time
 import RPi.GPIO as GPIO
 import Adafruit_DHT
+import tm1637
 
 GPIO.setmode(GPIO.BOARD)
 GPIO.setwarnings(False)
@@ -20,7 +21,7 @@ class SystemeThermostat:
         self.pinDisplayDio = 11
 
         self.temperatureCible = 18
-        self.temperatureReelle = None
+        self.temperatureReelle = 99
 
         self.derniereLectureBouton = 0
         self.delaiLectureBouton = 0.25
@@ -28,16 +29,17 @@ class SystemeThermostat:
         GPIO.setup(self.boutonPlus, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
         GPIO.setup(self.boutonMoins, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
+        self.display = tm1637.TM1637(clk=self.pinDisplayClk, dio=self.pinDisplayDio)
+        self.display.brightness(2)
+        self.display.show("----")
+
     def lireTemperature(self):
         humidite, temperature = Adafruit_DHT.read_retry(self.capteur, self.pinDht)
-        while True:
-            if temperature is not None:
-                break
-            print("Thermostat : lecture DHT11 impossible, nouvelle tentative dans 2 secondes")
-            time.sleep(2)
-            humidite, temperature = Adafruit_DHT.read_retry(self.capteur, self.pinDht)
 
-        return temperature
+        if temperature is None:
+            print("Thermostat : lecture DHT11 impossible")
+            return 99
+        return int(temperature)
 
     def lireBoutons(self):
         maintenant = time.time()
@@ -55,24 +57,43 @@ class SystemeThermostat:
             self.derniereLectureBouton = maintenant
             print("Consigne :", self.temperatureCible, "°C")
 
-    def afficherTemperatures(self):
-        # pour l'instant on affiche dans la console
-        # le vrai code du display ira ici
-        if self.temperatureReelle is None:
-            print("Temp réelle : -- | cible :", self.temperatureCible)
-        else:
-            print("Temp réelle :", str(self.temperatureReelle) + "°C", "| cible :", str(self.temperatureCible) + "°C")
+#    def afficherTemperatures(self):
+#        # pour l'instant on affiche dans la console
+#        # le vrai code du display ira ici
+#        if self.temperatureReelle is None:
+#            print("Temp réelle : -- | cible :", self.temperatureCible)
+#        else:
+#            print("Temp réelle :", str(self.temperatureReelle) + "°C", "| cible :", str(self.temperatureCible) + "°C")
+
+#    def valeurAffichee(self):
+#        if self.temperatureReelle is None:
+#            valeurReelle = 99
+#        else:
+#            valeurReelle = self.temperatureReelle
+#
+#        return f"{valeurReelle:02d}{self.temperatureCible:02d}"
+
+    def valeurAffichee(self):
+        return f"{self.temperatureReelle:02d}{self.temperatureCible:02d}"
+    
+    def afficherSurDisplay(self):
+        valeur = self.valeurAffichee()
+        self.display.show(valeur)
+
+    def afficherConsole(self):
+        print(
+            "Temp réelle : ", str(self.temperatureReelle) + "°C",
+            "| cible : ", str(self.temperatureCible) + "°C"
+        )
 
     def mettreAJour(self):
         self.lireBoutons()
         self.temperatureReelle = self.lireTemperature()
-        self.afficherTemperatures()
-
-        if self.temperatureReelle is None:
-            return True
-
-        return False
+        
+        self.afficherConsole()
+        self.afficherSurDisplay()
+        return self.temperatureReelle == 99 # condition d'arrêt pour le test
 
     def cleanup(self):
-        # rien à éteindre ici, incroyable mais vrai
+        self.display.clear()
         pass
