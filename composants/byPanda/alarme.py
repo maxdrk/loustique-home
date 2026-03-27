@@ -59,6 +59,12 @@ class SystemeAlarme:
         self.delaiLecture = 0.25
 
         self.initialiserGPIO()
+
+        self.dernierEtatPir = 0
+
+        print("Stabilisation du capteur PIR...")
+        time.sleep(10)
+
         self.mettreAJourEtat()
 
     def initialiserGPIO(self):
@@ -218,11 +224,14 @@ class SystemeAlarme:
         Si un mouvement est détecté alors que l'alarme est armée,
         on passe en état d'alarme.
         """
-        mouvement = GPIO.input(self.pinPir) == GPIO.HIGH
+        self.etatActuelPir = GPIO.input(self.pinPir)
 
-        if self.etat == "arme" and mouvement:
+        if self.etatActuelPir == GPIO.HIGH and self.dernierEtatPir == GPIO.LOW:
+            print("Mouvement détecté par le PIR.")
             self.declencherAlarme()
 
+        self.dernierEtatPir = self.etatActuelPir
+        
     def mettreAJour(self):
         """
         Fonction appelée en boucle dans le programme principal.
