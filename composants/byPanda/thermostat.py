@@ -36,9 +36,6 @@ class SystemeThermostat:
             print("Thermostat : lecture DHT11 impossible, nouvelle tentative dans 2 secondes")
             time.sleep(2)
             humidite, temperature = Adafruit_DHT.read_retry(self.capteur, self.pinDht)
-        if temperature is None:
-            print("Thermostat : lecture DHT11 impossible")
-            return None
 
         return temperature
 
