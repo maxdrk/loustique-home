@@ -10,7 +10,7 @@ class SystemeLumieres:
         # la pin de la 2e photorésistance manque sur le schéma
         # donc ici on met une valeur temporaire
         # elle apparaîtra peut-être un jour, comme la motivation en fin de projet
-        self.pinPhotoInterieure = 29
+        self.pinPhotoInterieure = 32
 
         self.led1 = 21
         self.led2 = 31

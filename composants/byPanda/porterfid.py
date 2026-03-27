@@ -42,7 +42,7 @@ class SystemePorteRFID:
         """
         Boucle secondaire qui attend les badges RFID.
 
-        La méthode read() est bloquante selon la bibliothèque utilisée,
+        La méthode read()/read_no_block() est bloquante selon la bibliothèque utilisée,
         donc on la place dans un thread séparé pour que le reste du
         programme continue de tourner normalement.
         """
