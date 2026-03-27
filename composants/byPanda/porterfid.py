@@ -48,7 +48,7 @@ class SystemePorteRFID:
         """
         while True:
             try:
-                badgeId, _ = self.lecteur.read()
+                badgeId, _ = self.lecteur.read_no_block()
                 self.badgeDetecte = badgeId
             except Exception as erreur:
                 print("Erreur RFID :", erreur)
