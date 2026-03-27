@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify
 from flask_talisman import Talisman
 from led import led
 import os
+import sys
 from add_user import add_user
 import auth
 import re
@@ -10,6 +11,11 @@ app = Flask(__name__)
 Talisman(app, force_https=True,
 content_security_policy=False )
 current_user = None
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+composants = os.path.join(BASE_DIR, "composants", "byPanda")
+sys.path.insert(0, composants)  
+from alarme import SystemeAlarme
 
 @app.route("/")
 def index():
@@ -34,6 +40,13 @@ def dashboard():
 def call_led():
     led(current_user)
     return jsonify({"success": True})
+@app.route("/alarme",methods=["POST"])
+def armer_alarme():
+    SystemeAlarme.armer()
+    return jsonify({"success": True})
+
+     
+   
 
 @app.route("/admin")
 def admin_page():
@@ -69,9 +82,6 @@ def get_users():
     users = auth.get_users()
     return jsonify({"success": True, "users": users})
 
-import os
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 if __name__ == "__main__":
     app.run(
