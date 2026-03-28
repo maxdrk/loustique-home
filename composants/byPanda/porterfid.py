@@ -18,7 +18,7 @@ class SystemePorteRFID:
 
         Elle ne pilote pas l'alarme et ne dépend pas du site web.
         """
-        self.pinLed = 40
+        self.pinLed = 7
         GPIO.setup(self.pinLed, GPIO.OUT, initial=GPIO.LOW)
 
         self.lecteur = SimpleMFRC522()
