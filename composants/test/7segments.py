@@ -1,7 +1,13 @@
 import tm1637
 import time as t
+import RPi.GPIO as GPIO
 
-# attention : mode BOARD
+GPIO.setmode(GPIO.BOARD)
+GPIO.setwarnings(False)
+
+GPIO.setup(7, GPIO.OUT)
+GPIO.setup(11, GPIO.OUT)
+
 display = tm1637.TM1637(clk=7, dio=11)
 
 display.brightness(2)
