@@ -27,5 +27,5 @@ except KeyboardInterrupt:
 
 finally:
     # On remet les sorties dans un état propre avant de quitter
-    alarme.cleanup(alarme)
-    porte.cleanup(porte)
+    alarme.cleanup()
+    porte.cleanup()
