@@ -1,6 +1,9 @@
 import time
-from alarme import SystemeAlarme as alarme
-from porterfid import SystemePorteRFID as porte
+from alarme import SystemeAlarme
+from porterfid import SystemePorteRFID
+
+alarme = SystemeAlarme()
+porte = SystemePorteRFID()
 
 # ------------------------------------------------------------
 # board1main.py
