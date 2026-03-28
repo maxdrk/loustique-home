@@ -1,0 +1,15 @@
+===========================================================
+   BRANCHEMENT RFID RC522 → RASPBERRY PI (MODE BOARD)
+===========================================================
+
+RC522           | Raspberry Pi (BOARD) | GPIO   | Rôle
+----------------|----------------------|--------|-------------------------
+SDA (SS)        | 24                   | GPIO8  | Chip Select (SPI)
+SCK             | 23                   | GPIO11 | Clock SPI
+MOSI            | 19                   | GPIO10 | Données vers RC522
+MISO            | 21                   | GPIO9  | Données vers Pi
+RST             | 22                   | GPIO25 | Reset du module
+GND             | 6                    | GND    | Masse
+3.3V            | 1                    | 3.3V   | Alimentation (PAS 5V)
+
+===========================================================

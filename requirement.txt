@@ -2,3 +2,4 @@ pymysql
 gpiozero
 bcrypt 
 dotenv
+mfrc522

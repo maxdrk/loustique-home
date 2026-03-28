@@ -1,6 +1,6 @@
 import time
-from alarme import SystemeAlarme
-from porterfid import SystemePorteRFID
+from alarme import SystemeAlarme as alarme
+from porterfid import SystemePorteRFID as porte
 
 # ------------------------------------------------------------
 # board1main.py
@@ -11,9 +11,6 @@ from porterfid import SystemePorteRFID
 # - le système d'alarme
 # - le système de porte RFID
 # ------------------------------------------------------------
-
-alarme = SystemeAlarme()
-porte = SystemePorteRFID()
 
 try:
     while True:
