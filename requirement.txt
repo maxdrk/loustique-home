@@ -3,4 +3,4 @@ gpiozero
 bcrypt 
 dotenv
 mfrc522
-tm1637
+python-tm1637
