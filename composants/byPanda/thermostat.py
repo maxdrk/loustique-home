@@ -26,8 +26,8 @@ class SystemeThermostat:
         self.derniereLectureBouton = 0
         self.delaiLectureBouton = 0.25
 
-        GPIO.setup(self.boutonPlus, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-        GPIO.setup(self.boutonMoins, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+        GPIO.setup(self.boutonPlus, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(self.boutonMoins, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
         self.display = tm1637.TM1637(clk=4, dio=17)
         self.display.brightness = 5
