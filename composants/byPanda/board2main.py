@@ -1,8 +1,13 @@
 import time
-from thermostat import SystemeThermostat as thermostat
-from lumieres import SystemeLumieres as lumieres
-from volets import SystemeVolets as volets
-from etatsysteme import EtatSysteme as etat
+from thermostat import SystemeThermostat
+from lumieres import SystemeLumieres
+from volets import SystemeVolets
+from etatsysteme import EtatSysteme
+
+thermostat = SystemeThermostat()
+lumieres = SystemeLumieres()
+volets = SystemeVolets()
+etat = EtatSysteme()
 
 try:
     while True:
