@@ -5,9 +5,6 @@ import RPi.GPIO as GPIO
 GPIO.setmode(GPIO.BOARD)
 GPIO.setwarnings(False)
 
-GPIO.setup(7, GPIO.Clock)
-GPIO.setup(11, GPIO.OUT)
-
 display = tm1637.TM1637(clk=7, dio=11)
 
 display.brightness = 5
