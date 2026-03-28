@@ -95,5 +95,5 @@ class SystemeThermostat:
         return self.temperatureReelle == 99 # condition d'arrêt pour le test
 
     def cleanup(self):
-        self.display.clear()
+        self.display.show("    ")
         pass
