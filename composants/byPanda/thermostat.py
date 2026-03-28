@@ -56,23 +56,23 @@ class SystemeThermostat:
             self.temperatureCible -= 1
             self.derniereLectureBouton = maintenant
             print("Consigne :", self.temperatureCible, "°C")
-
-#    def afficherTemperatures(self):
-#        # pour l'instant on affiche dans la console
-#        # le vrai code du display ira ici
-#        if self.temperatureReelle is None:
-#            print("Temp réelle : -- | cible :", self.temperatureCible)
-#        else:
-#            print("Temp réelle :", str(self.temperatureReelle) + "°C", "| cible :", str(self.temperatureCible) + "°C")
-
-#    def valeurAffichee(self):
-#        if self.temperatureReelle is None:
-#            valeurReelle = 99
-#        else:
-#            valeurReelle = self.temperatureReelle
-#
-#        return f"{valeurReelle:02d}{self.temperatureCible:02d}"
-
+    """
+    def afficherTemperatures(self):
+        # pour l'instant on affiche dans la console
+        # le vrai code du display ira ici
+        if self.temperatureReelle is None:
+            print("Temp réelle : -- | cible :", self.temperatureCible)
+        else:
+            print("Temp réelle :", str(self.temperatureReelle) + "°C", "| cible :", str(self.temperatureCible) + "°C")
+    """
+    """            
+    def valeurAffichee(self):
+        if self.temperatureReelle is None:
+            valeurReelle = 99
+        else:
+            valeurReelle = self.temperatureReelle
+        return f"{valeurReelle:02d}{self.temperatureCible:02d}"
+    """
     def valeurAffichee(self):
         return f"{self.temperatureReelle:02d}{self.temperatureCible:02d}"
     
