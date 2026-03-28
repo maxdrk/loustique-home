@@ -1,8 +1,7 @@
 import Adafruit_DHT as dht
 import time as t
-
 capteur = dht.DHT11
-pin = 22
+pin = 25
 
 while True:
     humidite, temperature = dht.read_retry(capteur, pin)
