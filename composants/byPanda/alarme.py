@@ -228,7 +228,8 @@ class SystemeAlarme:
 
         if self.etatActuelPir == GPIO.HIGH and self.dernierEtatPir == GPIO.LOW:
             print("Mouvement détecté par le PIR.")
-            self.declencherAlarme()
+            if self.etat == "arme":
+                self.declencherAlarme()
 
         self.dernierEtatPir = self.etatActuelPir
         
