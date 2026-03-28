@@ -4,7 +4,7 @@ import time as t
 GPIO.setmode(GPIO.BOARD)
 GPIO.setwarnings(False)
 
-ledPorte = 40
+ledPorte = 7
 
 GPIO.setup(ledPorte, GPIO.OUT)
 
