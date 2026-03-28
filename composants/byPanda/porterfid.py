@@ -52,6 +52,7 @@ class SystemePorteRFID:
                 
                 if badgeId is not None:
                     self.badgeDetecte = badgeId
+                    time.sleep(4)  # Petite pause pour éviter les lectures multiples du même badge
 
             except Exception as erreur:
                 print("Erreur RFID :", erreur)
