@@ -3,7 +3,7 @@ import time as t
 
 GPIO.setmode(GPIO.BOARD)
 
-pir = 40
+pir = 26
 GPIO.setup(pir, GPIO.IN)
 
 print("Stabilisation...")
