@@ -29,8 +29,8 @@ class SystemeThermostat:
         GPIO.setup(self.boutonPlus, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
         GPIO.setup(self.boutonMoins, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
-        self.display = tm1637.TM1637(clk=self.pinDisplayClk, dio=self.pinDisplayDio)
-        self.display.brightness(2)
+        self.display = tm1637.TM1637(clk=4, dio=17)
+        self.display.brightness = 5
         self.display.show("----")
 
     def lireTemperature(self):
