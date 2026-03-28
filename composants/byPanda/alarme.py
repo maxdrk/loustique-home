@@ -22,7 +22,7 @@ class SystemeAlarme:
         # -----------------------------
         # Définition des pins physiques
         # -----------------------------
-        self.pinPir = 40
+        self.pinPir = 10
         self.pinBuzzer = 12
 
         self.pinLedRouge = 11
