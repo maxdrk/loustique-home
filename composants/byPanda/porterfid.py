@@ -25,8 +25,8 @@ class SystemePorteRFID:
 
         # Remplacer ces identifiants par les vrais UID autorisés
         self.badgesAutorises = {
-            123456789012: "Admin",
-            987654321098: "Utilisateur"
+            210529491879: "Admin",
+            264829104877: "Utilisateur"
         }
 
         self.badgeDetecte = None
