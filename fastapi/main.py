@@ -1,7 +1,7 @@
 import os
 import sys
 from fastapi import FastAPI
-import RPi.GPIO as GPIO # <-- CORRIGÉ : "import" au lieu de "from"
+import RPi.GPIO as GPIO 
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
@@ -13,7 +13,7 @@ sys.path.insert(0, composants)
 #from lumieres import SystemeLumieres
 from thermostat import SystemeThermostat
 #from volets import SystemeVolets
-from septsegments import afficher_temperature # <-- CORRIGÉ : On a enlevé le "#" !
+from septsegments import afficher_temperature 
 
 app = FastAPI(title="Loustiques API - Pi 2")
 
@@ -36,15 +36,9 @@ async def eteindre_led():
 @app.get("/temperature")
 async def read_temp():
     temp = controleur_thermostat.lireTemperature()
-    
-    # 1. Si la lecture échoue, on renvoie une erreur et on arrête là
     if temp is None:
         return {"success": False, "message": "Impossible de lire le capteur DHT11"}
-        
-    # 2. CORRIGÉ : On affiche la température sur l'écran ICI (en dehors du if)
     afficher_temperature(temp)
-        
-    # 3. On renvoie le succès au site web
     return {"success": True, "temperature": temp}
 
 
