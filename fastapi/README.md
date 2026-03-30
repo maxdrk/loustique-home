@@ -77,8 +77,7 @@ Elles sont automatiquement installées via le script `main.sh`.
 
 Une fois l’installation terminée, le serveur peut être lancé avec :
 
-```bash
-uvicorn main:app --host 0.0.0.0 --port 8000
+```python main
 ```
 
 ---
