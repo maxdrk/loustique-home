@@ -13,7 +13,7 @@ sys.path.insert(0, composants)
 from lumieres import SystemeLumieres
 from thermostat import SystemeThermostat
 from volets import SystemeVolets
-from septsegments import afficher_temperature # <-- CORRIGÉ : On a enlevé le "#" !
+from septsegments import afficher_temperature
 
 app = FastAPI(title="Loustiques API - Pi 2")
 
