@@ -4,7 +4,7 @@ import RPi.GPIO as GPIO
 
 GPIO.setmode(GPIO.BOARD)
 capteur = dht.DHT11
-pin = 22
+pin = 25
 
 def lire_temperature():
     humidite, temperature = dht.read_retry(capteur, pin)
@@ -15,3 +15,5 @@ def lire_temperature():
         print("Erreur")
 
     t.sleep(2)
+
+lire_temperature()

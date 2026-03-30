@@ -2,7 +2,7 @@ import time
 import RPi.GPIO as GPIO
 import Adafruit_DHT
 
-GPIO.setmode(GPIO.BOARD)
+GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
 

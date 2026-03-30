@@ -1,7 +1,7 @@
 import tm1637
 import time as t
 
-
+# Le TM1637 utilise le mode BCM en arrière-plan
 display = tm1637.TM1637(clk=4, dio=17)
 display.brightness(2)
 
