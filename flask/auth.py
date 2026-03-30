@@ -48,14 +48,14 @@ def login(username, password):
     finally:
         cursor.close()
         conn.close()
-def get_user_by_rfid(rfid_uid):
+def get_user_by_rfid(RFID):
     conn = init()
     if conn is None:
         return None
     try:
         cursor = conn.cursor()
-        requete = "SELECT username FROM Auth WHERE rfid_uid = %s"
-        cursor.execute(requete, (rfid_uid,))
+        requete = "SELECT username FROM Auth WHERE RFID = %s"
+        cursor.execute(requete, (RFID))
         resultat = cursor.fetchone()
         
         if resultat:
@@ -63,7 +63,7 @@ def get_user_by_rfid(rfid_uid):
             log.info(f"Badge RFID reconnu pour l'utilisateur : {username}")
             return username
         else:
-            log.info(f"Tentative RFID refusée : badge {rfid_uid} inconnu.")
+            log.info(f"Tentative RFID refusée : badge {RFID} inconnu.")
             return None
             
     except pymysql.err.OperationalError as e:
