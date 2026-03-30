@@ -33,8 +33,10 @@ async def read_temp():
     temp = controleur_thermostat.lireTemperature()
     if temp is None:
         return {"success": False, "message": "Impossible de lire le capteur DHT11"}
+        afficherTemperatures()
         
     return {"success": True, "temperature": temp}
+
 
 """
 @app.get("/open_volet")
