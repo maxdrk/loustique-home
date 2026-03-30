@@ -263,6 +263,11 @@
         <span class="a-sub">Contrôler la alarme</span>
         <span class="a-arrow">›</span>
       </button>
+       <button class="action-btn" onclick="callBoard1()">
+        <span class="a-label">💡 Board1</span>
+        <span class="a-sub">Contrôler la board1</span>
+        <span class="a-arrow">›</span>
+      </button>
       <button class="action-btn" onclick="showToast('Fonction à venir...')">
         <span class="a-label">⚙️ Paramètres</span>
         <span class="a-sub">Configuration système</span>
@@ -308,7 +313,8 @@
       } catch {
         showToast("Erreur lors de l'appel LED.");
       }
-    } async function callAlarm() {
+    } 
+    async function callAlarm() {
       try {
         const res = await fetch('/alarme', {
           method: 'POST',
@@ -317,6 +323,17 @@
         showToast("alarme activée !");
       } catch {
         showToast("Erreur lors de l'appel alarme.");
+      }
+    }
+      async function callBoard1() {
+      try {
+        const res = await fetch('/board1', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        showToast("board1 activée !");
+      } catch {
+        showToast("Erreur lors de l'appel board1.");
       }
     }
 
