@@ -3,6 +3,7 @@ from flask_talisman import Talisman
 from led import led
 import os
 import sys
+import log
 from add_user import add_user
 import auth
 import re
@@ -16,6 +17,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 composants = os.path.join(BASE_DIR, "composants", "byPanda")
 sys.path.insert(0, composants)  
 from alarme import SystemeAlarme
+from lumiere import SystemeLumieres
+from board1main import *
 
 @app.route("/")
 def index():
@@ -38,8 +41,25 @@ def dashboard():
 
 @app.route("/led", methods=["POST"])
 def call_led():
-    led(current_user)
+    etat = SystemeLumieres.mettreAJourEtat() 
+    if (etat == 0):
+        SystemeLumieres.allumerLumieres
+    
+    else:
+        SystemeLumieres.eteindreLumieres()  
     return jsonify({"success": True})
+@app.route("/board1",methods=["POST"])
+def board1():
+    try:
+        call_board1()
+        return jsonify({"succes": True})
+
+    except error as e:
+        log.error(f"erreur : {e}")
+        return jsonify({"success": False})
+
+              
+
 @app.route("/alarme",methods=["POST"])
 def armer_alarme():
     SystemeAlarme.armer()
