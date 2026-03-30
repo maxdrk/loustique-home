@@ -77,7 +77,9 @@ Elles sont automatiquement installées via le script `main.sh`.
 
 Une fois l’installation terminée, le serveur peut être lancé avec :
 
-```python main
+```
+python main
+
 ```
 
 ---
