@@ -9,6 +9,7 @@ sys.path.insert(0, composants)
 from lumieres import SystemeLumieres
 from thermostat import SystemeThermostat
 from volets import SystemeVolets
+from septsegments import  afficher_temperature
 
 app = FastAPI(title="Loustiques API - Pi 2")
 
@@ -33,7 +34,7 @@ async def read_temp():
     temp = controleur_thermostat.lireTemperature()
     if temp is None:
         return {"success": False, "message": "Impossible de lire le capteur DHT11"}
-        afficherTemperatures()
+        afficher_temperature(temp)
         
     return {"success": True, "temperature": temp}
 
