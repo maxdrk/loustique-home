@@ -109,6 +109,9 @@ def get_users():
 
 
 if __name__ == "__main__":
+    print("[*] Démarrage du lecteur RFID et de l'alarme en arrière-plan...")
+    thread_hardware = threading.Thread(target=call_board1, daemon=True)
+    thread_hardware.start()
     app.run(
         host="0.0.0.0",
         port=443,
