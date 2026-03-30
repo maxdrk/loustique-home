@@ -1,25 +1,51 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
 import os
 import sys
-
-
-
-
-app = FastAPI(title="Loustiques API - Pi 2")
+from fastapi import FastAPI
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 composants = os.path.join(BASE_DIR, "composants", "byPanda")
 sys.path.insert(0, composants) 
+
 from lumieres import SystemeLumieres
+from thermostat import SystemeThermostat
+from volets import SystemeVolets
 
+app = FastAPI(title="Loustiques API - Pi 2")
 
-class CommandeLumiere(BaseModel):
-    action: str
+controleur_lumieres = SystemeLumieres()
+controleur_thermostat = SystemeThermostat()
+#controleur_volet = SystemeVolets()
 
-@app.post("/Lumière")
-async def action_pi2(commande: CommandeLumiere):
-    if commande.action == "allumer_lumiere":
-        return {"success": True, "message": "Lumière allumée par le Pi 2"}
+@app.get("/up_led")
+async def allumer_led():
+    controleur_lumieres.allumerLumieres()
+    controleur_lumieres.modeManuel = True 
+    return {"success": True, "message": "Lumière allumée par le Pi 2"}
     
-    return {"success": False, "message": "Action inconnue"}
+@app.get("/down_led")
+async def eteindre_led():
+    controleur_lumieres.eteindreLumieres()
+    controleur_lumieres.modeManuel = True 
+    return {"success": True, "message": "Lumière éteinte par le Pi 2"}
+
+@app.get("/temperature")
+async def read_temp():
+    temp = controleur_thermostat.lireTemperature()
+    if temp is None:
+        return {"success": False, "message": "Impossible de lire le capteur DHT11"}
+        
+    return {"success": True, "temperature": temp}
+
+"""
+@app.get("/open_volet")
+async def open_volet():
+    volet = controleur_volet.ouvrirVolets()
+    if volet is None:
+        return {"success": False, "message": "Impossible de lire le capteur DHT11"}
+        
+    return {"success": True, "message" :"Volet ouvert par le raspberry 2"}    
+"""
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
