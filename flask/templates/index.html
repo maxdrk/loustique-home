@@ -139,13 +139,15 @@
     <p class="footer">Accès réservé aux utilisateurs ajoutés par les loustiques.</p>
   </div>
 
-  <script>
+<script>
+    // 1. Écoute de la touche Entrée
     ["username", "password"].forEach(id => {
       document.getElementById(id).addEventListener("keydown", e => {
         if (e.key === "Enter") handleLogin();
       });
     });
 
+    // 2. Fonction de connexion manuelle (Mot de passe)
     async function handleLogin() {
       const username = document.getElementById("username").value.trim();
       const password = document.getElementById("password").value;
@@ -187,6 +189,31 @@
         btn.textContent = "Se connecter";
       }
     }
+    setInterval(async () => {
+      try {
+        
+        const res = await fetch('/api/check-rfid-login'); 
+        const data = await res.json();
+
+        if (data.success) {
+          const msg = document.getElementById("msg");
+          const btn = document.getElementById("btn");
+          const inputs = document.querySelectorAll("input");
+        
+          btn.disabled = true;
+          inputs.forEach(input => input.disabled = true);
+          
+          msg.className = "message success";
+          msg.textContent = "Badge reconnu ! Bienvenue " + data.username + "...";
+          
+          setTimeout(() => {
+            window.location.href = "/dashboard";
+          }, 1000);
+        }
+      } catch (e) {
+       
+      }
+    }, 2000); 
   </script>
 
 </body>
