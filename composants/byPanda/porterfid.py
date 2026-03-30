@@ -2,6 +2,11 @@ import time
 import threading
 import RPi.GPIO as GPIO
 from mfrc522 import SimpleMFRC522
+import requests
+import urllib3
+
+# On cache le gros texte d'avertissement orange (InsecureRequestWarning)
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 GPIO.setmode(GPIO.BOARD)
 GPIO.setwarnings(False)
@@ -11,86 +16,68 @@ class SystemePorteRFID:
     def __init__(self):
         """
         Initialise le système local d'accès par RFID.
-
-        Cette classe gère uniquement :
-        - le lecteur RFID
-        - la LED qui symbolise l'ouverture de porte
-
-        Elle ne pilote pas l'alarme et ne dépend pas du site web.
+        Gère le lecteur RFID et la LED de la porte.
+        L'authentification est maintenant gérée par le serveur Flask et MariaDB.
         """
         self.pinLed = 40
         GPIO.setup(self.pinLed, GPIO.OUT, initial=GPIO.LOW)
 
         self.lecteur = SimpleMFRC522()
 
-        # Remplacer ces identifiants par les vrais UID autorisés
-        self.badgesAutorises = {
-            123456789012: "Admin",
-            987654321098: "Utilisateur"
-        }
-
         self.badgeDetecte = None
         self.derniereOuverture = 0
         self.delaiEntreScans = 2
 
         # Ce thread sert à ne pas bloquer la boucle principale
-        # pendant l'attente d'un badge RFID.
         self.threadLecture = threading.Thread(target=self.boucleLectureRFID, daemon=True)
         self.threadLecture.start()
 
     def boucleLectureRFID(self):
         """
         Boucle secondaire qui attend les badges RFID.
-
-        La méthode read() est bloquante selon la bibliothèque utilisée,
-        donc on la place dans un thread séparé pour que le reste du
-        programme continue de tourner normalement.
+        Utilise read_id() au lieu de read() pour éviter les erreurs "AUTH ERROR"
+        sur la mémoire interne des badges.
         """
         while True:
             try:
-                badgeId, _ = self.lecteur.read()
+                badgeId = self.lecteur.read_id()
                 self.badgeDetecte = badgeId
             except Exception as erreur:
                 print("Erreur RFID :", erreur)
                 time.sleep(1)
 
-    def badgeAutorise(self, badgeId):
-        """Retourne True si le badge est autorisé."""
-        return badgeId in self.badgesAutorises
-
     def ouvrirPorte(self):
-        """
-        Simule l'ouverture de la porte avec la LED.
-
-        Ici la LED reste allumée 2 secondes pour représenter
-        l'accès autorisé.
-        """
+        """Simule l'ouverture de la porte avec la LED pendant 2 secondes."""
         print("Porte ouverte.")
         GPIO.output(self.pinLed, GPIO.HIGH)
         time.sleep(2)
         GPIO.output(self.pinLed, GPIO.LOW)
 
     def traiterBadge(self, badgeId):
-        """
-        Vérifie si le badge présenté est autorisé.
-        Si oui, on ouvre la porte.
-        Sinon, on affiche un refus.
-        """
-        print("Badge détecté :", badgeId)
+        """Envoie le numéro du badge à Flask pour vérification dans MariaDB."""
+        print(f"Badge détecté : {badgeId}")
 
-        if self.badgeAutorise(badgeId):
-            print("Accès autorisé pour", self.badgesAutorises[badgeId])
-            self.ouvrirPorte()
-        else:
-            print("Accès refusé.")
+        try:
+            # Vérifie bien que l'URL correspond à ta route Flask (avec ou sans /api)
+            url = "https://127.0.0.1/rfid-scan" 
+            donnees = {"badge_id": str(badgeId)}
+
+            # verify=False est nécessaire car le serveur local utilise un certificat auto-signé
+            reponse = requests.post(url, json=donnees, timeout=2, verify=False)
+            data = reponse.json()
+
+            if data.get("success") is True:
+                nom_utilisateur = data.get("username")
+                print(f"Accès autorisé par la base de données pour : {nom_utilisateur}")
+                self.ouvrirPorte()
+            else:
+                print("Accès refusé : ce badge n'est assigné à personne dans la base de données.")
+
+        except Exception as e:
+            print("Erreur de communication avec Flask :", e)
 
     def mettreAJour(self):
-        """
-        Fonction appelée en boucle dans le programme principal.
-
-        Elle récupère le dernier badge lu par le thread RFID
-        et le traite si nécessaire.
-        """
+        """Fonction appelée en boucle dans le programme principal."""
         if self.badgeDetecte is None:
             return
 
@@ -104,7 +91,5 @@ class SystemePorteRFID:
         self.traiterBadge(badgeId)
 
     def cleanup(self):
-        """
-        Eteint la LED de porte lors de la fermeture du programme.
-        """
+        """Eteint la LED de porte lors de la fermeture du programme."""
         GPIO.output(self.pinLed, GPIO.LOW)

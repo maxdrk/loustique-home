@@ -48,14 +48,19 @@ def call_led():
     else:
         SystemeLumieres.eteindreLumieres()  
     return jsonify({"success": True})
-@app.route("/board1",methods=["POST"])
-def board1():
-    try:
-        call_board1()
-        return jsonify({"succes": True})
-
-    except error as e:
-        log.error(f"erreur : {e}")
+@app.route("/rfid-scan", methods=["POST"])
+def rfid_scan():
+    global dernier_badge_scanne
+    data = request.get_json()
+    badge_id = str(data.get("badge_id")) 
+    username = auth.get_user_by_rfid(badge_id)
+    
+    if username:
+        
+        dernier_badge_scanne = username
+        return jsonify({"success": True, "username": username})
+    else:
+        # Badge inconnu dans la BDD
         return jsonify({"success": False})
 
               
