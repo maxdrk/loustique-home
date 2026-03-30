@@ -4,7 +4,7 @@
 
 Ce serveur **FastAPI** est destiné à être déployé sur le **deuxième Raspberry Pi** de l’architecture.
 
-Son rôle principal est de **gérer et traiter toutes les requêtes envoyées par le Raspberry Pi 1**, afin de centraliser la logique de traitement et d’assurer une communication fluide entre les deux الأجهزة.
+Son rôle principal est de **gérer et traiter toutes les requêtes envoyées par le Raspberry Pi 1**, afin de centraliser la logique de traitement et d’assurer une communication fluide entre les deux.
 
 ---
 
