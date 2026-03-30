@@ -9,7 +9,7 @@ GPIO.setwarnings(False)
 class SystemeThermostat:
     def __init__(self):
         self.capteur = Adafruit_DHT.DHT11
-        self.pinDht = 22
+        self.pinDht = 25
 
         self.boutonPlus = 16
         self.boutonMoins = 18

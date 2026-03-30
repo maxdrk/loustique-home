@@ -324,18 +324,31 @@
       } catch {
         showToast("Erreur lors de l'appel alarme.");
       }
-    }
-      async function callBoard1() {
+       async function call_led_down() {
       try {
-        const res = await fetch('/board1', {
-          method: 'POST',
+        const res = await fetch('http://pi32.local/down_led', {
+          method: 'GET',
           headers: { 'Content-Type': 'application/json' }
         });
-        showToast("board1 activée !");
+        showToast("led activée !");
+      } catch {
+        showToast("Erreur lors de l'appel board1.");
+      }}
+    }
+      async function call_led_up() {
+      try {
+        const res = await fetch('http://pi32.local/up_led', {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        showToast("led activée !");
       } catch {
         showToast("Erreur lors de l'appel board1.");
       }
+      
+      
     }
+    
 
     function go_admin() {
       window.location.href = "/admin";

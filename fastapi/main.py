@@ -1,6 +1,10 @@
 import os
 import sys
 from fastapi import FastAPI
+import RPi.GPIO as GPIO # <-- CORRIGÉ : "import" au lieu de "from"
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 composants = os.path.join(BASE_DIR, "composants", "byPanda")
@@ -9,7 +13,7 @@ sys.path.insert(0, composants)
 from lumieres import SystemeLumieres
 from thermostat import SystemeThermostat
 from volets import SystemeVolets
-from septsegments import  afficher_temperature
+from septsegments import afficher_temperature # <-- CORRIGÉ : On a enlevé le "#" !
 
 app = FastAPI(title="Loustiques API - Pi 2")
 
@@ -34,20 +38,10 @@ async def read_temp():
     temp = controleur_thermostat.lireTemperature()
     if temp is None:
         return {"success": False, "message": "Impossible de lire le capteur DHT11"}
-        afficher_temperature(temp)
-        
+    afficher_temperature(temp)
+    
     return {"success": True, "temperature": temp}
 
-
-"""
-@app.get("/open_volet")
-async def open_volet():
-    volet = controleur_volet.ouvrirVolets()
-    if volet is None:
-        return {"success": False, "message": "Impossible de lire le capteur DHT11"}
-        
-    return {"success": True, "message" :"Volet ouvert par le raspberry 2"}    
-"""
 
 if __name__ == "__main__":
     import uvicorn

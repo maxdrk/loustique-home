@@ -1,10 +1,12 @@
 import Adafruit_DHT as dht
 import time as t
+import RPi.GPIO as GPIO
 
+GPIO.setmode(GPIO.BOARD)
 capteur = dht.DHT11
 pin = 22
 
-while True:
+def lire_temperature():
     humidite, temperature = dht.read_retry(capteur, pin)
 
     if temperature is not None:
