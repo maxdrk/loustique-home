@@ -26,8 +26,8 @@ class SystemeThermostat:
         self.derniereLectureBouton = 0
         self.delaiLectureBouton = 0.25
 
-        GPIO.setup(self.boutonPlus, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-        GPIO.setup(self.boutonMoins, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+        GPIO.setup(self.boutonPlus, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(self.boutonMoins, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
         self.display = tm1637.TM1637(clk=4, dio=17)
         self.display.brightness = 5
@@ -46,7 +46,45 @@ class SystemeThermostat:
 
         if maintenant - self.derniereLectureBouton < self.delaiLectureBouton:
             return
+        
+        self.etatPlusBefore = 0
+        self.etatMoinsBefore = 0
 
+        while True:
+
+            if GPIO.input(self.boutonPlus):
+                self.etatPlus = GPIO.input(self.boutonPlus)
+
+                if self.etatPlus != self.etatPlusBefore:
+                    if self.etatPlus:
+                        print("Bplus UP")
+                    else:
+                        print("Bplus Down")
+                        self.temperatureCible += 1
+                        self.derniereLectureBouton = maintenant
+                        print("Consigne :", self.temperatureCible, "°C")
+
+                    self.etatPlusBefore = self.etatPlus
+            
+            
+            elif GPIO.input(self.boutonMoins):
+                self.etatMoins = GPIO.input(self.boutonMoins)
+
+                if self.etatMoins != self.etatMoinsBefore:
+                    if self.etatMoins:
+                        print("Bmoins UP")
+                    else:
+                        print("Bmoins Down")
+                        self.temperatureCible -= 1
+                        self.derniereLectureBouton = maintenant
+                        print("Consigne :", self.temperatureCible, "°C")
+
+                    self.etatMoinsBefore = self.etatMoins
+        
+        
+            time.sleep(0.05)
+
+        """
         if GPIO.input(self.boutonPlus):
             self.temperatureCible += 1
             self.derniereLectureBouton = maintenant
@@ -56,6 +94,7 @@ class SystemeThermostat:
             self.temperatureCible -= 1
             self.derniereLectureBouton = maintenant
             print("Consigne :", self.temperatureCible, "°C")
+        """
     """
     def afficherTemperatures(self):
         # pour l'instant on affiche dans la console
