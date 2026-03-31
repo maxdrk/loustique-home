@@ -58,7 +58,10 @@ sleep 1
 #----------------------------
 # 2. Installation de MariaDB x phpmyadmin
 #------------------------------
+read -p "Installer mariadb et phpMyAdmin ? (y/n)" db
+if [ "$db" = 'y'];then
 bash DB/main.sh
+fi
 
 
 #-------------------------------
@@ -83,7 +86,6 @@ if ! apt install python3 python3-pip python3-venv -y; then
 fi
 PYTHON_VERSION=$(python3 --version 2>&1)
 echo " $PYTHON_VERSION installé"
-echo " $PYTHON_VERSION installé"
 sleep 1
 
 
@@ -98,7 +100,6 @@ VENV_LIST=()
 
 for dir in "${SEARCH_DIRS[@]}"; do
     if [ -d "$dir" ]; then
-        # Un venv valide contient bin/activate et bin/python
         while IFS= read -r -d '' activate_path; do
             venv_dir=$(dirname "$(dirname "$activate_path")")
             if [ -f "$venv_dir/bin/python" ]; then
@@ -154,26 +155,23 @@ if [[ "$CREATE_VENV" =~ ^[oO]$ ]]; then
                 echo "Installation des dépendances depuis requirements.txt..."
                 "$VENV_PATH/bin/pip" install -r ./requirements.txt
                 echo " Dépendances installées"
-                echo " Dépendances installées"
+                
             else
                 echo " Aucun requirements.txt trouvé, installation des dépendances ignorée"
-                echo " Aucun requirements.txt trouvé, installation des dépendances ignorée"
+   
             fi
         else
-            echo " Erreur lors de la création du venv à : $VENV_PATH"
             echo " Erreur lors de la création du venv à : $VENV_PATH"
             exit 1
         
     fi
 else
     echo " Création ignorée"
-    echo " Création ignorée"
 fi
 
 # ----------------------------
 # Fin
 # ----------------------------
-print_step " Configuration terminée"
 print_step " Configuration terminée"
 echo ""
 if [ -f "./.venv_path" ]; then

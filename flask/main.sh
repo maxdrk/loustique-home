@@ -58,7 +58,11 @@ sleep 1
 #----------------------------
 # 2. Installation de MariaDB x phpmyadmin
 #------------------------------
+
+read -p "Installer mariadb et phpMyAdmin ? (y/n)" db
+if [ "$db" = 'y'];then
 bash DB/main.sh
+fi
 
 
 #-------------------------------
@@ -154,27 +158,26 @@ if [[ "$CREATE_VENV" =~ ^[oO]$ ]]; then
                 echo "Installation des dépendances depuis requirements.txt..."
                 "$VENV_PATH/bin/pip" install -r ./requirements.txt
                 echo " Dépendances installées"
-                echo " Dépendances installées"
+                
             else
                 echo " Aucun requirements.txt trouvé, installation des dépendances ignorée"
-                echo " Aucun requirements.txt trouvé, installation des dépendances ignorée"
+                
             fi
         else
-            echo " Erreur lors de la création du venv à : $VENV_PATH"
             echo " Erreur lors de la création du venv à : $VENV_PATH"
             exit 1
         
     fi
 else
     echo " Création ignorée"
-    echo " Création ignorée"
+    
 fi
 
 # ----------------------------
 # Fin
 # ----------------------------
 print_step " Configuration terminée"
-print_step " Configuration terminée"
+
 echo ""
 if [ -f "./.venv_path" ]; then
     echo "Venv configuré : $(cat ./.venv_path)"
