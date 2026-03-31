@@ -16,7 +16,7 @@ from thermostat import SystemeThermostat
 from etatsystemes import EtatSysteme
 from septsegments import afficher_temperature 
 
-app = FastAPI(title="Loustiques API - Pi 2")
+app = FastAPI(title="L'API des loustiques")
 
 controleur_lumieres = SystemeLumieres()
 controleur_thermostat = SystemeThermostat()

@@ -50,7 +50,7 @@ bash web_secu/ssl.sh
 
 cat << 'EOF'
 =============================
-Vérification du daemin Avahi
+Vérification du daemon Avahi
 ============================
 EOF
 bash web_secu/avahi.sh

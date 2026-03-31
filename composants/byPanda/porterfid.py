@@ -54,15 +54,11 @@ class SystemePorteRFID:
         GPIO.output(self.pinLed, GPIO.LOW)
 
     def traiterBadge(self, badgeId):
-        """Envoie le numéro du badge à Flask pour vérification dans MariaDB."""
         print(f"Badge détecté : {badgeId}")
-
         try:
-            # Vérifie bien que l'URL correspond à ta route Flask (avec ou sans /api)
+            
             url = "https://127.0.0.1/rfid-scan" 
             donnees = {"badge_id": str(badgeId)}
-
-            # verify=False est nécessaire car le serveur local utilise un certificat auto-signé
             reponse = requests.post(url, json=donnees, timeout=2, verify=False)
             data = reponse.json()
 

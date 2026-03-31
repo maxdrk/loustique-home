@@ -236,16 +236,31 @@
         <div class="card-value" id="clock">--:--</div>
         <div class="card-sub" id="date-display">--</div>
       </div>
+        <div class="card">
+        <div class="card-label">Température</div>
+        <div class="card-sub" id="date-display">--</div>
+      </div>
+    
+        <div class="card">
+        <div class="card-label">Porte</div>
+        <div class="card-sub" id="date-display">--</div>
+      </div>
       <div class="card">
         <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-        <div class="card-label">Raspberry Pi</div>
-        <div class="card-value" style="color:#2563eb;">Actif</div>
+        <div class="card-label">Raspberry Pi 1 (actuelle)</div>
+        <div class="card-value" style="color:green;">Actif</div>
         <div class="card-sub">Flask 3.1</div>
+      </div>
+      <div class="card">
+        <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        <div class="card-label">Raspberry Pi 2 distant </div>
+        <div class="card-value" style="color:green;">Actif</div>
+        <div class="card-sub">FastAPi</div>
       </div>
       <div class="card">
         <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         <div class="card-label">Session</div>
-        <div class="card-value">Authentifiée</div>
+        <div class="card-value" style="color: green;">Authentifiée</div>
         <div class="card-sub">Accès autorisé</div>
       </div>
     </div>
@@ -259,25 +274,13 @@
         <span class="a-arrow">›</span>
       </button>
        <button class="action-btn" onclick="callAlarm()">
-        <span class="a-label">💡 Alarme</span>
-        <span class="a-sub">Contrôler la alarme</span>
-        <span class="a-arrow">›</span>
-      </button>
-       <button class="action-btn" onclick="callBoard1()">
-        <span class="a-label">💡 Board1</span>
-        <span class="a-sub">Contrôler la board1</span>
-        <span class="a-arrow">›</span>
-      </button>
-      <button class="action-btn" onclick="showToast('Fonction à venir...')">
-        <span class="a-label">⚙️ Paramètres</span>
-        <span class="a-sub">Configuration système</span>
-        <span class="a-arrow">›</span>
-      </button>
-      <button class="action-btn" onclick="showToast('Fonction à venir...')">
-        <span class="a-label">📡 Réseau</span>
-        <span class="a-sub">État de la connexion</span>
-        <span class="a-arrow">›</span>
-      </button>
+        <span class="a-label">Alarme</span>
+        <span class="a-sub">Armer l'alarme</span>
+        <span class="a-arrow">›</span></button>
+        <button class="action-btn" onclick="callAlarm()">
+        <span class="a-label">Alarme</span>
+        <span class="a-sub">Désarmer l'alarme</span>
+        <span class="a-arrow">›</span></button>
       <button class="action-btn" onclick="go_admin()">
         <span class="a-label">Administration</span>
         <span class="a-sub">Administrer les loustiques</span>

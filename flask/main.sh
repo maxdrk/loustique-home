@@ -102,7 +102,6 @@ VENV_LIST=()
 
 for dir in "${SEARCH_DIRS[@]}"; do
     if [ -d "$dir" ]; then
-        # Un venv valide contient bin/activate et bin/python
         while IFS= read -r -d '' activate_path; do
             venv_dir=$(dirname "$(dirname "$activate_path")")
             if [ -f "$venv_dir/bin/python" ]; then

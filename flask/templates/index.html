@@ -129,7 +129,7 @@
 
     <div class="champ">
       <label for="password">Mot de passe</label>
-      <input type="password" id="password" placeholder="Wola ouais" autocomplete="current-password" />
+      <input type="password" id="password" placeholder="Mot de passe du loustique" autocomplete="current-password" />
     </div>
 
     <button id="btn" onclick="handleLogin()">Se connecter</button>
@@ -140,14 +140,14 @@
   </div>
 
 <script>
-    // 1. Écoute de la touche Entrée
+   
     ["username", "password"].forEach(id => {
       document.getElementById(id).addEventListener("keydown", e => {
         if (e.key === "Enter") handleLogin();
       });
     });
 
-    // 2. Fonction de connexion manuelle (Mot de passe)
+   -
     async function handleLogin() {
       const username = document.getElementById("username").value.trim();
       const password = document.getElementById("password").value;
