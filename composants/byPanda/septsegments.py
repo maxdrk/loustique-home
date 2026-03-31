@@ -1,16 +1,18 @@
 import tm1637
 import time as t
 
-# Le TM1637 utilise le mode BCM en arrière-plan
+
 display = tm1637.TM1637(clk=4, dio=17)
 display.brightness(2)
 
-def afficher_temperature(temperature):
+def afficher_temperature(temperature,temperature_moyenne):
     print(f"Test affichage: {temperature}")
     try:
         temp_entiere = int(temperature)
-        texte_ecran = f"{temp_entiere} C" 
+        texte_ecran = f"{temp_entiere}{temperature_moyenne}" 
         display.show(texte_ecran)
         
     except Exception as e:
         print(f"Erreur d'affichage : {e}")
+
+
