@@ -1,22 +1,31 @@
 import RPi.GPIO as GPIO
 import time as t
 
-GPIO.setmode(GPIO.BOARD)
+
+GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
-ledPorte = 7
+led1 = 9
+led2 = 6 
+led3 = 13  # example BCM pin
 
-GPIO.setup(ledPorte, GPIO.OUT)
+GPIO.setup(led1, GPIO.OUT)
+GPIO.setup(led2, GPIO.OUT)
+GPIO.setup(led3, GPIO.OUT)
 
-print("Test LED porte...")
+print("Test LEDs...")
 
 try:
     while True:
-        GPIO.output(ledPorte, GPIO.HIGH)
+        GPIO.output(led1, GPIO.HIGH)
+        GPIO.output(led2, GPIO.HIGH)
+        GPIO.output(led3, GPIO.HIGH)
         print("LED ON")
         t.sleep(1)
 
-        GPIO.output(ledPorte, GPIO.LOW)
+        GPIO.output(led1, GPIO.LOW)
+        GPIO.output(led2, GPIO.LOW)
+        GPIO.output(led3, GPIO.LOW)
         print("LED OFF")
         t.sleep(1)
 
@@ -24,4 +33,4 @@ except KeyboardInterrupt:
     print("Stop")
 
 finally:
-    GPIO.output(ledPorte, GPIO.LOW)
+    GPIO.cleanup()

@@ -1,7 +1,7 @@
 import time
 import RPi.GPIO as GPIO
 
-GPIO.setmode(GPIO.BOARD)
+GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
 
@@ -12,9 +12,9 @@ class SystemeLumieres:
         # elle apparaîtra peut-être un jour, comme la motivation en fin de projet
         self.pinPhotoInterieure = 29
 
-        self.led1 = 21
-        self.led2 = 31
-        self.led3 = 33
+        self.led1 = 6
+        self.led2 = 9
+        self.led3 = 13
 
         self.boutonManuel = 36
 
