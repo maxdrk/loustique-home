@@ -1,3 +1,5 @@
 fastapi
 uvicorn
 rpi.gpio
+python-tm1637
+Adafruit_DHT
