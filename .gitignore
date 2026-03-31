@@ -1,1 +1,2 @@
-web_secu/ssl
+*.pem
+.env
