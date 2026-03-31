@@ -192,7 +192,7 @@
     setInterval(async () => {
       try {
         
-        const res = await fetch('/api/check-rfid-login'); 
+        const res = await fetch('/check-rfid-login'); 
         const data = await res.json();
 
         if (data.success) {
