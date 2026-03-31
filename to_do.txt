@@ -1,0 +1,16 @@
+1. ldr --> ETEINT ALLUME ou lux && activer les trois led (phyisque si possible faire en sorte d'eteindre les
+lumières via html faire bouton auto ou manuel sur le html pour ldr)
+
+2. Servo moteur phyisquement ouvrir/fermer et afficher l'etat sur l'html div presentoire 
+
+(36/13 convertir en BCM)
+
+3. Faire la logique de l'alarme et que le peer detecte du mouvement ca sonne + RGB alarme
+- bleu desactivée
+- Vert activée 
+- Rouge activée et détection d'objet
+activation du buzzer de façon COHÉRENTE !!!!!
+
+4. RFID à vérifier 
+
+5. faire la connectivité des raspberries
