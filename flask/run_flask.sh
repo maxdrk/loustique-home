@@ -46,14 +46,14 @@ Vérification des certificats SSL
 ==================================
 EOF
 
-bash web_secu/ssl.sh
+bash ../web_secu/ssl.sh
 
 cat << 'EOF'
 =============================
 Vérification du daemon Avahi
 ============================
 EOF
-bash web_secu/avahi.sh
+bash ../web_secu/avahi.sh
 
 
 cat << 'EOF'

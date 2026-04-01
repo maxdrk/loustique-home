@@ -19,7 +19,7 @@ class SystemePorteRFID:
         Gère le lecteur RFID et la LED de la porte.
         L'authentification est maintenant gérée par le serveur Flask et MariaDB.
         """
-        self.pinLed = 21
+        self.pinLed = 4
         GPIO.setup(self.pinLed, GPIO.OUT, initial=GPIO.LOW)
 
         self.lecteur = SimpleMFRC522()

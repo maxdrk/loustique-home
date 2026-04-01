@@ -268,14 +268,14 @@
     <div class="section-title">Actions rapides</div>
 
     <div class="actions">
-      <button class="action-btn" onclick="callLed()">
-        <span class="a-label">💡 LED</span>
-        <span class="a-sub">Contrôler la LED</span>
+      <button class="action-btn" onclick="call_led_up()">
+        <span class="a-label">💡 UP LED</span>
+        <span class="a-sub">Allumer la LED</span>
         <span class="a-arrow">›</span>
       </button>
        <button class="action-btn" onclick="callAlarm()">
-        <span class="a-label">Alarme</span>
-        <span class="a-sub">Armer l'alarme</span>
+        <span class="a-label">DOWN led</span>
+        <span class="a-sub">Eteindre la led</span>
         <span class="a-arrow">›</span></button>
         <button class="action-btn" onclick="callAlarm()">
         <span class="a-label">Alarme</span>
@@ -306,17 +306,7 @@
     setInterval(updateClock, 1000);
 
    
-     async function callLed() {
-      try {
-        const res = await fetch('/led', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' }
-        });
-        showToast("LED activée !");
-      } catch {
-        showToast("Erreur lors de l'appel LED.");
-      }
-    } 
+     
     async function callAlarm() {
       try {
         const res = await fetch('/alarme', {
@@ -329,7 +319,7 @@
       }
        async function call_led_down() {
       try {
-        const res = await fetch('http://pi32.local/down_led', {
+        const res = await fetch('https://pi32.local:8000down_led', {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' }
         });
@@ -340,16 +330,14 @@
     }
       async function call_led_up() {
       try {
-        const res = await fetch('http://pi32.local/up_led', {
+        const res = await fetch('https://pi32.local:8000/up_led', {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' }
         });
-        showToast("led activée !");
+        showToast("LED allumée !");
       } catch {
-        showToast("Erreur lors de l'appel board1.");
+        showToast("Erreur lors de l'appel Pi 2.");
       }
-      
-      
     }
     
 

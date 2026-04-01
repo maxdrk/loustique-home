@@ -1,7 +1,9 @@
 import os
 import sys
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 import RPi.GPIO as GPIO 
+import uvicorn
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
@@ -13,7 +15,7 @@ sys.path.insert(0, composants)
 from lumieres import SystemeLumieres
 from thermostat import SystemeThermostat
 #from volets import SystemeVolets
-from etatsystemes import EtatSysteme
+from etatsysteme import EtatSysteme
 from septsegments import afficher_temperature 
 
 app = FastAPI(title="L'API des loustiques")
@@ -56,13 +58,33 @@ async def read_temp():
             return {"success": False, "message": "Impossible de lire le capteur DHT11"}
             
         etatSysteme.signalerOk()
-        afficher_temperature(temp)
+        afficher_temperature(temp, 18)
         return {"success": True, "temperature": temp}
         
     except Exception as e: 
         etatSysteme.signalerProbleme()
         return {"success": False, "message": str(e)}
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Autorise tous les sites web (le fameux "*")
+    allow_credentials=False, # (Doit être False quand on met "*")
+    allow_methods=["*"],  # Autorise toutes les méthodes (GET, POST, etc.)
+    allow_headers=["*"],  # Autorise tous les en-têtes
+)        
             
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    # On prépare les chemins proprement pour éviter les erreurs de parenthèses
+    # (Vérifie bien que le dossier 'web_secu' est bien dans le dossier racine de ton Pi 2)
+    chemin_cle = os.path.join(BASE_DIR, 'web_secu', 'ssl', 'key.pem')
+    chemin_cert = os.path.join(BASE_DIR, 'web_secu', 'ssl', 'cert.pem')
+    
+    # On lance Uvicorn avec la bonne syntaxe
+    uvicorn.run(
+        "main:app", 
+        host="0.0.0.0", 
+        port=8000, 
+        ssl_keyfile=chemin_cle,
+        ssl_certfile=chemin_cert
+    )

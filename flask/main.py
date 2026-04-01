@@ -10,14 +10,14 @@ import re
 
 app = Flask(__name__)
 Talisman(app, force_https=True,
-content_security_policy=False )
+content_security_policy=False)
 current_user = None
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 composants = os.path.join(BASE_DIR, "composants", "byPanda")
 sys.path.insert(0, composants)  
 from alarme import SystemeAlarme
-from lumiere import SystemeLumieres
+from lumieres import SystemeLumieres
 from board1main import *
 
 @app.route("/")
@@ -48,20 +48,44 @@ def call_led():
     else:
         SystemeLumieres.eteindreLumieres()  
     return jsonify({"success": True})
+# Variable temporaire pour stocker le dernier badge scanné
+dernier_badge_scanne = None
+
 @app.route("/rfid-scan", methods=["POST"])
 def rfid_scan():
     global dernier_badge_scanne
     data = request.get_json()
-    badge_id = str(data.get("badge_id")) 
+    badge_id = data.get("badge_id")
+    
+    # On va créer cette fonction dans ton fichier auth.py juste après
     username = auth.get_user_by_rfid(badge_id)
     
     if username:
-        
+        # Le badge est dans la base de données ! On autorise.
         dernier_badge_scanne = username
         return jsonify({"success": True, "username": username})
     else:
-        # Badge inconnu dans la BDD
+        # Badge inconnu
         return jsonify({"success": False})
+
+@app.route("/check-rfid-login", methods=["GET"])
+def check_rfid_login():
+    global dernier_badge_scanne
+    global current_user
+    
+    # Si le Raspberry Pi a signalé un badge validé récemment
+    if dernier_badge_scanne:
+        user = dernier_badge_scanne
+        
+        # On valide la connexion côté serveur
+        current_user = user 
+        
+        # On vide la variable pour ne pas le reconnecter en boucle à l'infini
+        dernier_badge_scanne = None 
+        
+        return jsonify({"success": True, "username": user})
+    
+    return jsonify({"success": False})
 
               
 
@@ -106,6 +130,23 @@ def create_user():
 def get_users():
     users = auth.get_users()
     return jsonify({"success": True, "users": users})
+
+@app.route("/api/relais-pi2/<action>", methods=["GET"])
+def relais_pi2(action):
+    """
+    Flask sert de relais. Le navigateur demande à Flask, et Flask demande au Pi 2.
+    """
+    try:
+        # L'adresse de ton Pi 2
+        url_pi2 = f"https://pi32.local:8000/{action}" 
+        
+        # Le Pi 1 fait la requête ! verify=False permet d'ignorer le faux certificat
+        reponse = requests.get(url_pi2, timeout=5, verify=False)
+        
+        return jsonify(reponse.json())
+        
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)})
 
 
 if __name__ == "__main__":
