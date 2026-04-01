@@ -19,6 +19,13 @@ from etatsysteme import EtatSysteme
 from septsegments import afficher_temperature 
 
 app = FastAPI(title="L'API des loustiques")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],  
+    allow_headers=["*"], 
+)       
 
 controleur_lumieres = SystemeLumieres()
 controleur_thermostat = SystemeThermostat()
@@ -66,21 +73,11 @@ async def read_temp():
         return {"success": False, "message": str(e)}
 
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Autorise tous les sites web (le fameux "*")
-    allow_credentials=False, # (Doit être False quand on met "*")
-    allow_methods=["*"],  # Autorise toutes les méthodes (GET, POST, etc.)
-    allow_headers=["*"],  # Autorise tous les en-têtes
-)        
+ 
             
 if __name__ == "__main__":
-    # On prépare les chemins proprement pour éviter les erreurs de parenthèses
-    # (Vérifie bien que le dossier 'web_secu' est bien dans le dossier racine de ton Pi 2)
     chemin_cle = os.path.join(BASE_DIR, 'web_secu', 'ssl', 'key.pem')
     chemin_cert = os.path.join(BASE_DIR, 'web_secu', 'ssl', 'cert.pem')
-    
-    # On lance Uvicorn avec la bonne syntaxe
     uvicorn.run(
         "main:app", 
         host="0.0.0.0", 

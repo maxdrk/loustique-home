@@ -1,5 +1,5 @@
 import time
-from alarme import SystemeAlarme
+from ALARM_V1 import *
 from porterfid import SystemePorteRFID
 
 # ------------------------------------------------------------
@@ -16,15 +16,18 @@ alarme = SystemeAlarme()
 porte = SystemePorteRFID()
 
 
+
 def call_board1():
     try:
         while True:
             # Mise à jour des deux modules locaux
-            alarme.mettreAJour()
+            ALARM_V1.boucle_principale()
             porte.mettreAJour()
             time.sleep(0.05)
 
     except KeyboardInterrupt:
+        porte.cleanup()
+        alarme.cleanup()
         print("\nArrêt manuel du programme.")
 
     finally:

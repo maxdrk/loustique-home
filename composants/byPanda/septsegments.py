@@ -20,3 +20,4 @@ def afficher_temperature(temperature, temperature_moyenne):
         
     except Exception as e:
         print(f"Erreur d'affichage : {e}")
+    execpt keybo

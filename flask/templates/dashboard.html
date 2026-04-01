@@ -234,14 +234,14 @@
         <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         <div class="card-label">Heure locale</div>
         <div class="card-value" id="clock">--:--</div>
-        <div class="card-sub" id="date-display">--</div>
-      </div>
-        <div class="card">
+        <div class="card-sub" id="date-display">--</div></div>
+
+<div class="card">
         <div class="card-label">Température</div>
-        <div class="card-sub" id="date-display">--</div>
-      </div>
+        <div class="card-value" id="temp-display">-- °C</div>
+        
     
-        <div class="card">
+        <div class="card"></div>
         <div class="card-label">Porte</div>
         <div class="card-sub" id="date-display">--</div>
       </div>
@@ -273,7 +273,7 @@
         <span class="a-sub">Allumer la LED</span>
         <span class="a-arrow">›</span>
       </button>
-       <button class="action-btn" onclick="callAlarm()">
+       <button class="action-btn" onclick="call_led_down()">
         <span class="a-label">DOWN led</span>
         <span class="a-sub">Eteindre la led</span>
         <span class="a-arrow">›</span></button>
@@ -306,7 +306,7 @@
     setInterval(updateClock, 1000);
 
    
-     
+     /*
     async function callAlarm() {
       try {
         const res = await fetch('/alarme', {
@@ -316,10 +316,34 @@
         showToast("alarme activée !");
       } catch {
         showToast("Erreur lors de l'appel alarme.");
+      }*/
+
+      async function get_temperature() {
+      try {
+        const res = await fetch('/api/temperature', {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const data = await res.json();
+        
+  
+        if (data.success) {
+          document.getElementById("temp-display").textContent = data.temperature + " °C";
+        } else {
+          document.getElementById("temp-display").textContent = "Erreur";
+          console.error("Erreur de température :", data.message);
+        }
+      } catch (e) {
+        document.getElementById("temp-display").textContent = "Hors ligne";
+        console.error("Impossible de joindre le relais pour la température.");
       }
+      }
+    get_temperature();
+    setInterval(get_temperature, 60000);
        async function call_led_down() {
       try {
-        const res = await fetch('https://pi32.local:8000down_led', {
+        const res = await fetch('/api/down_led', {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' }
         });
@@ -327,10 +351,10 @@
       } catch {
         showToast("Erreur lors de l'appel board1.");
       }}
-    }
-      async function call_led_up() {
+    
+    async function call_led_up() {
       try {
-        const res = await fetch('https://pi32.local:8000/up_led', {
+        const res = await fetch('/api/up_led', {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' }
         });
