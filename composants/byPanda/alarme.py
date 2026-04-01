@@ -1,7 +1,7 @@
 import time
 import RPi.GPIO as GPIO
 
-GPIO.setmode(GPIO.BOARD)
+GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
 
@@ -22,17 +22,17 @@ class SystemeAlarme:
         # -----------------------------
         # Définition des pins physiques
         # -----------------------------
-        self.pinPir = 22
-        self.pinBuzzer = 12
+        self.pinPir = 15
+        self.pinBuzzer = 18
 
-        self.pinLedRouge = 11
-        self.pinLedVerte = 13
-        self.pinLedBleue = 15
+        self.pinLedRouge = 17
+        self.pinLedVerte = 27
+        self.pinLedBleue = 22
 
         # Clavier 4x4
         # 4 lignes + 4 colonnes
-        self.lignes = [29, 31, 33, 35]
-        self.colonnes = [37, 32, 36, 38]
+        self.lignes = [5, 6, 13, 19]
+        self.colonnes = [26, 12, 16, 20]
 
         # Disposition classique d'un clavier 4x4
         self.touches = [

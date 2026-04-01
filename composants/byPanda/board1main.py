@@ -15,17 +15,19 @@ from porterfid import SystemePorteRFID
 alarme = SystemeAlarme()
 porte = SystemePorteRFID()
 
-try:
-    while True:
-        # Mise à jour des deux modules locaux
-        alarme.mettreAJour()
-        porte.mettreAJour()
-        time.sleep(0.05)
 
-except KeyboardInterrupt:
-    print("\nArrêt manuel du programme.")
+def call_board1():
+    try:
+        while True:
+            # Mise à jour des deux modules locaux
+            alarme.mettreAJour()
+            porte.mettreAJour()
+            time.sleep(0.05)
 
-finally:
-    # On remet les sorties dans un état propre avant de quitter
-    alarme.cleanup()
-    porte.cleanup()
+    except KeyboardInterrupt:
+        print("\nArrêt manuel du programme.")
+
+    finally:
+        # On remet les sorties dans un état propre avant de quitter
+        alarme.cleanup()
+        porte.cleanup()

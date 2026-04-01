@@ -8,7 +8,7 @@ import urllib3
 # On cache le gros texte d'avertissement orange (InsecureRequestWarning)
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-GPIO.setmode(GPIO.BOARD)
+GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
 
@@ -19,7 +19,7 @@ class SystemePorteRFID:
         Gère le lecteur RFID et la LED de la porte.
         L'authentification est maintenant gérée par le serveur Flask et MariaDB.
         """
-        self.pinLed = 40
+        self.pinLed = 21
         GPIO.setup(self.pinLed, GPIO.OUT, initial=GPIO.LOW)
 
         self.lecteur = SimpleMFRC522()
