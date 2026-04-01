@@ -9,8 +9,8 @@ GPIO.setwarnings(False)
 
 # ── Broches ─────────────────────────────────────────────────────────────────
 PIN_LED_R  = 17
-PIN_LED_G  = 27
-PIN_LED_B  = 22
+PIN_LED_G  = 22
+PIN_LED_B  = 27
 PIN_PIR    = 15
 PIN_BUZZER = 18
 
