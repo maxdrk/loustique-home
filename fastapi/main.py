@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import RPi.GPIO as GPIO 
 import uvicorn
+import threading
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
@@ -17,6 +18,11 @@ from thermostat import SystemeThermostat
 #from volets import SystemeVolets
 from etatsysteme import EtatSysteme
 from septsegments import afficher_temperature 
+import bouton_servo 
+import bouton
+import LDR 
+
+
 
 app = FastAPI(title="L'API des loustiques")
 app.add_middleware(
@@ -72,10 +78,24 @@ async def read_temp():
         etatSysteme.signalerProbleme()
         return {"success": False, "message": str(e)}
 
-
- 
+@app.get("/volet_status")
+async def volet_status():
+    try:
+        actuel = bouton_servo.etat_porte 
+        return {"success": True, "status": actuel}
+    except Exception as e:
+        return {"success": False, "message": str(e)}
+    
+@app.get("/luminosite")
+def get_luminosite():
+    return ({"success": True, "status": LDR.lire_etat()})
             
 if __name__ == "__main__":
+    t1 = threading.Thread(target=bouton_servo.test_boutons, daemon=True)
+    t2 = threading.Thread(target=bouton.test_boutons, daemon=True)
+    
+    t1.start()
+    t2.start()
     chemin_cle = os.path.join(BASE_DIR, 'web_secu', 'ssl', 'key.pem')
     chemin_cert = os.path.join(BASE_DIR, 'web_secu', 'ssl', 'cert.pem')
     uvicorn.run(
