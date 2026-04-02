@@ -140,14 +140,12 @@
   </div>
 
  <script>
-    // 1. Écoute de la touche Entrée
     ["username", "password"].forEach(id => {
       document.getElementById(id).addEventListener("keydown", e => {
         if (e.key === "Enter") handleLogin();
       });
     });
 
-    // 2. Fonction de connexion manuelle (Mot de passe)
     async function handleLogin() {
       const username = document.getElementById("username").value.trim();
       const password = document.getElementById("password").value;
@@ -190,7 +188,6 @@
       }
     }
 
-    // 3. Écoute automatique du badge (RFID) - SORTI DE LA FONCTION !
     setInterval(async () => {
       try {
         // Attention : Vérifie que cette route correspond bien à celle dans main.py
