@@ -1,6 +1,6 @@
 import RPi.GPIO as GPIO
 import time as t
-
+##
 GPIO.setmode(GPIO.BOARD)
 
 pir = 10
