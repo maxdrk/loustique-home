@@ -3,11 +3,9 @@ import RPi.GPIO as GPIO
 import time
 import threading
 
-# ── Numérotation BCM ────────────────────────────────────────────────────────
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
-# ── Broches ─────────────────────────────────────────────────────────────────
 PIN_LED_R  = 17
 PIN_LED_G  = 22
 PIN_LED_B  = 27
@@ -25,10 +23,8 @@ KEYPAD_MAP = [
     ['*', '0', '#', 'D'],
 ]
 
-# ── Code secret (modifiable ici) ─────────────────────────────────────────────
 CODE_SECRET = "1234"
 
-# ── Configuration GPIO ───────────────────────────────────────────────────────
 GPIO.setup(PIN_LED_R,  GPIO.OUT, initial=GPIO.LOW)
 GPIO.setup(PIN_LED_G,  GPIO.OUT, initial=GPIO.LOW)
 GPIO.setup(PIN_LED_B,  GPIO.OUT, initial=GPIO.LOW)
@@ -40,17 +36,12 @@ for row in ROWS:
 for col in COLS:
     GPIO.setup(col, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-# ── État global ──────────────────────────────────────────────────────────────
 etat = "desarmee"
 etat_lock = threading.Lock()
 
 _stop_buzzer   = threading.Event()
 _thread_buzzer = None
 
-
-# ════════════════════════════════════════════════════════════════════════════
-# LED RGB
-# ════════════════════════════════════════════════════════════════════════════
 
 def led(r=False, g=False, b=False):
     """Allume la LED RGB avec la couleur voulue."""
@@ -62,11 +53,6 @@ def led_bleu():  led(b=True)
 def led_vert():  led(g=True)
 def led_rouge(): led(r=True)
 def led_off():   led()
-
-
-# ════════════════════════════════════════════════════════════════════════════
-# Buzzer
-# ════════════════════════════════════════════════════════════════════════════
 
 def bip(nb=1, duree=0.08, pause=0.12):
     """Émet nb bip(s) courts."""
@@ -85,10 +71,6 @@ def _buzzer_continu(stop_event: threading.Event):
         time.sleep(0.5)
     GPIO.output(PIN_BUZZER, GPIO.LOW)
 
-
-# ════════════════════════════════════════════════════════════════════════════
-# Keypad 4x4
-# ════════════════════════════════════════════════════════════════════════════
 
 def lire_touche():
     """
@@ -128,10 +110,6 @@ def lire_code(nb_chiffres=4, timeout=30):
     return saisi
 
 
-# ════════════════════════════════════════════════════════════════════════════
-# Transitions d'état
-# ════════════════════════════════════════════════════════════════════════════
-
 def passer_en_desarmee():
     global etat, _thread_buzzer
     _stop_buzzer.set()
@@ -163,10 +141,6 @@ def passer_en_declenchee():
     _thread_buzzer.start()
 
 
-# ════════════════════════════════════════════════════════════════════════════
-# Thread : surveillance PIR
-# ════════════════════════════════════════════════════════════════════════════
-
 def _surveiller_pir(stop_evt: threading.Event):
     """Lit le PIR toutes les 100 ms. Déclenche si mouvement et armée."""
     print("[PIR] Surveillance démarrée")
@@ -178,10 +152,6 @@ def _surveiller_pir(stop_evt: threading.Event):
             passer_en_declenchee()
         time.sleep(0.1)
 
-
-# ════════════════════════════════════════════════════════════════════════════
-# Boucle principale
-# ════════════════════════════════════════════════════════════════════════════
 
 def boucle_principale():
     global etat
@@ -204,7 +174,6 @@ def boucle_principale():
             with etat_lock:
                 etat_local = etat
 
-            # ── DÉSARMÉE : attente d'un code pour armer ──────────────────────
             if etat_local == "desarmee":
                 print("  → Saisir le code pour ARMER :")
                 code = lire_code(nb_chiffres=len(CODE_SECRET))
@@ -215,11 +184,9 @@ def boucle_principale():
                     print("  ✘ Code incorrect")
                     bip(nb=1, duree=0.4)           # 1 bip long = erreur
 
-            # ── ARMÉE : le thread PIR gère le déclenchement ──────────────────
             elif etat_local == "armee":
                 time.sleep(0.1)
 
-            # ── DÉCLENCHÉE : attente du code pour désarmer ───────────────────
             elif etat_local == "declenchee":
                 print("  → Saisir le code pour DÉSARMER :")
                 code = lire_code(nb_chiffres=len(CODE_SECRET))
@@ -238,6 +205,3 @@ def boucle_principale():
         led_off()
         GPIO.cleanup()
         print("[INFO] GPIO libérés. Fin du programme.")
-
-
-# ════════════════════════════════════════════════════════════════════════════
