@@ -1,103 +1,79 @@
-# Serveur FastAPI
+🏠 Projet IoT : API de Contrôle Domotique (Raspberry Pi 2)
 
-## Description
+Ce dépôt contient le code du Serveur API déployé sur le deuxième Raspberry Pi. Son rôle est de piloter les composants physiques (LED, Thermostat, Afficheurs) en répondant aux requêtes envoyées par le Raspberry Pi 1.
+🏗️ Architecture du Système
 
-Ce serveur **FastAPI** est destiné à être déployé sur le **deuxième Raspberry Pi** de l’architecture.
+Le projet repose sur une architecture distribuée :
 
-Son rôle principal est de **gérer et traiter toutes les requêtes envoyées par le Raspberry Pi 1**, afin de centraliser la logique de traitement et d’assurer une communication fluide entre les deux.
+    Raspberry Pi 1 (Client) : Envoie les requêtes HTTP/HTTPS.
 
----
+    Raspberry Pi 2 (Serveur - Ce repo) : Reçoit les ordres, exécute la logique métier via les GPIO et renvoie l'état du système.
 
-## Architecture
+🛠️ Installation Rapide
 
-* **Raspberry Pi 1**
+Un script d'automatisation est fourni pour configurer l'environnement, les bases de données et les dépendances.
+Bash
 
-  * Envoie les requêtes (HTTP/API)
-  * Sert de client / déclencheur
-
-* **Raspberry Pi 2 (ce serveur)**
-
-  * Héberge le serveur FastAPI
-  * Reçoit, traite et répond aux requêtes
-  * Exécute la logique métier
-
----
-
-## Installation
-
-Pour garantir une installation propre et optimale, il est recommandé d’utiliser le script fourni.
-
-### 1. Cloner le projet
-
-```bash
-git clone <repo_url>
-cd <repo>
-```
-
-### 2. Lancer l’installation automatique
-
-Le script `main.sh` permet de :
-
-* créer un environnement virtuel Python (`venv`)
-* installer toutes les dépendances nécessaires
-* configurer l’environnement correctement
-
-```bash
+# 1. Rendre le script exécutable
 chmod +x main.sh
-./main.sh
-```
 
----
+# 2. Lancer l'installation (nécessite les droits sudo)
+sudo ./main.sh
 
-## Environnement virtuel
+Ce que fait le script main.sh :
 
-Le projet utilise **Python venv** pour isoler les dépendances.
+    Mise à jour du système (apt update & upgrade).
 
-Si besoin, activation manuelle :
+    Installation optionnelle de MariaDB et phpMyAdmin.
 
-```bash
-source venv/bin/activate
-```
+    Configuration d'un environnement virtuel Python (venv).
 
----
+    Installation des dépendances via requirement.txt.
 
-## Dépendances
+🚀 Lancement du Serveur
 
-Les dépendances sont listées dans le fichier :
+Pour démarrer l'API, utilisez le script de lancement qui vérifie les prérequis (Python, SSL, Avahi) avant de lancer Uvicorn :
+Bash
 
-```
-requirements.txt
-```
+chmod +x run_api.sh
+sudo ./run_api.sh
 
-Elles sont automatiquement installées via le script `main.sh`.
+Note : Le serveur utilise HTTPS. Les certificats doivent être présents dans ../web_secu/ssl/.
+📡 Points d'entrée de l'API (Endpoints)
 
----
+L'API est documentée automatiquement (Swagger) via FastAPI à l'adresse : https://<IP_DU_PI>:8000/docs
+Méthode	Route	Description
+GET	/up_led	Allume les lumières et active le mode manuel.
+GET	/down_led	Éteint les lumières et active le mode manuel.
+GET	/temperature	Lit le capteur DHT11 et affiche la valeur sur le 7 segments.
+📂 Structure du Code Python (main.py)
 
-## Lancement du serveur
+Le serveur utilise une approche modulaire pour gérer les composants :
 
-Une fois l’installation terminée, le serveur peut être lancé avec :
+    SystemeLumieres : Gestion des LEDs.
 
-```
-python main
+    SystemeThermostat : Lecture des données capteurs.
 
-```
+    EtatSysteme : Gestion visuelle des erreurs/succès (LED d'état).
 
----
+    afficher_temperature : Pilotage de l'afficheur TM1637.
 
-## Objectif
+📋 Dépendances Principales
 
-Ce serveur a pour objectif de :
+    FastAPI & Uvicorn : Framework web et serveur ASGI.
 
-* centraliser le traitement des requêtes
-* améliorer les performances globales du système
-* permettre une architecture distribuée entre plusieurs Raspberry Pi
+    RPi.GPIO : Contrôle des broches du Raspberry Pi.
 
----
+    Adafruit_DHT : Lecture des capteurs d'humidité et température.
 
-## Notes
+    python-tm1637 : Driver pour l'afficheur 7 segments.
 
-* Assurez-vous que les deux Raspberry Pi sont sur le même réseau.
-* Vérifiez les ports et adresses IP pour permettre la communication entre les deux machines.
-* Adapter la configuration si nécessaire selon votre environnement.
+⚠️ Notes de Sécurité
 
----
+    Le serveur est configuré avec CORS autorisant toutes les origines ("*") pour faciliter le développement.
+
+    La communication est sécurisée par SSL (TLS).
+
+    Le service Avahi est utilisé pour la résolution de noms sur le réseau local.
+
+API Développée par les loustiques
