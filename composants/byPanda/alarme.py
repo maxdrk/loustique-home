@@ -2,20 +2,20 @@ import RPi.GPIO as GPIO
 import time
 import threading
 
-# Configuration initiale
-GPIO.setmode(GPIO.BOARD) # Utilisation des numéros physiques des pins
+# ── Numérotation BCM ────────────────────────────────────────────────────────
+GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
-# --- CONFIGURATION PINS (BOARD) ---
-PIN_LED_R  = 11
-PIN_LED_G  = 15
-PIN_LED_B  = 13
-PIN_PIR    = 10
-PIN_BUZZER = 12
+# ── Broches ─────────────────────────────────────────────────────────────────
+PIN_LED_R  = 17
+PIN_LED_G  = 27
+PIN_LED_B  = 22
+PIN_PIR    = 15
+PIN_BUZZER = 18
 
-# Pins Keypad (Vérifie bien tes branchements physiques sur ces numéros)
-ROWS = [29, 31, 33, 35]        
-COLS = [37, 32, 36, 38]          
+# Keypad 4x4 — 4 lignes (sorties) + 4 colonnes (entrées pull-up)
+ROWS = [5, 6, 13, 19]        # R1 R2 R3 R4
+COLS = [26, 12, 16, 20]      # C1 C2 C3 C4
 
 KEYPAD_MAP = [
     ['1', '2', '3', 'A'],
@@ -24,9 +24,10 @@ KEYPAD_MAP = [
     ['*', '0', '#', 'D'],
 ]
 
+# ── Code secret (modifiable ici) ─────────────────────────────────────────────
 CODE_SECRET = "1234"
 
-# --- INITIALISATION GPIO ---
+# ── Configuration GPIO ───────────────────────────────────────────────────────
 GPIO.setup(PIN_LED_R,  GPIO.OUT, initial=GPIO.LOW)
 GPIO.setup(PIN_LED_G,  GPIO.OUT, initial=GPIO.LOW)
 GPIO.setup(PIN_LED_B,  GPIO.OUT, initial=GPIO.LOW)
@@ -38,15 +39,20 @@ for row in ROWS:
 for col in COLS:
     GPIO.setup(col, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-etat_alarme = "Désarmée" 
+# ── État global ──────────────────────────────────────────────────────────────
+etat = "desarmee"
 etat_lock = threading.Lock()
 
 _stop_buzzer   = threading.Event()
 _thread_buzzer = None
 
 
+# ════════════════════════════════════════════════════════════════════════════
+# LED RGB
+# ════════════════════════════════════════════════════════════════════════════
 
 def led(r=False, g=False, b=False):
+    """Allume la LED RGB avec la couleur voulue."""
     GPIO.output(PIN_LED_R, GPIO.HIGH if r else GPIO.LOW)
     GPIO.output(PIN_LED_G, GPIO.HIGH if g else GPIO.LOW)
     GPIO.output(PIN_LED_B, GPIO.HIGH if b else GPIO.LOW)
@@ -56,7 +62,13 @@ def led_vert():  led(g=True)
 def led_rouge(): led(r=True)
 def led_off():   led()
 
+
+# ════════════════════════════════════════════════════════════════════════════
+# Buzzer
+# ════════════════════════════════════════════════════════════════════════════
+
 def bip(nb=1, duree=0.08, pause=0.12):
+    """Émet nb bip(s) courts."""
     for _ in range(nb):
         GPIO.output(PIN_BUZZER, GPIO.HIGH)
         time.sleep(duree)
@@ -64,6 +76,7 @@ def bip(nb=1, duree=0.08, pause=0.12):
         time.sleep(pause)
 
 def _buzzer_continu(stop_event: threading.Event):
+    """Boucle interne : buzzer ON/OFF jusqu'à stop_event."""
     while not stop_event.is_set():
         GPIO.output(PIN_BUZZER, GPIO.HIGH)
         time.sleep(0.5)
@@ -72,123 +85,156 @@ def _buzzer_continu(stop_event: threading.Event):
     GPIO.output(PIN_BUZZER, GPIO.LOW)
 
 
-def lire_touche():
+# ════════════════════════════════════════════════════════════════════════════
+# Keypad 4x4
+# ════════════════════════════════════════════════════════════════════════════
 
+def lire_touche():
+    """
+    Scan matriciel : met chaque ligne à LOW tour à tour
+    et lit les colonnes. Retourne la touche ou None.
+    """
     for i, row in enumerate(ROWS):
         GPIO.output(row, GPIO.LOW)
-        time.sleep(0.01) # Stabilisation électrique
         for j, col in enumerate(COLS):
             if GPIO.input(col) == GPIO.LOW:
-                time.sleep(0.05) # Anti-rebond
+                time.sleep(0.05)                   # anti-rebond
                 while GPIO.input(col) == GPIO.LOW:
-                    time.sleep(0.01) 
+                    pass                            # attente relâchement
                 GPIO.output(row, GPIO.HIGH)
                 return KEYPAD_MAP[i][j]
         GPIO.output(row, GPIO.HIGH)
     return None
 
-def lire_code(nb_chiffres=4, timeout=20):
+def lire_code(nb_chiffres=4, timeout=30):
+    """
+    Attend nb_chiffres touches numériques sur le keypad.
+    Retourne la chaîne saisie ou '' si timeout.
+    """
     saisi = ""
     debut  = time.time()
-    print("  Entrez le code : ", end="", flush=True)
+    print("  Code : ", end="", flush=True)
     while len(saisi) < nb_chiffres:
         if time.time() - debut > timeout:
-            print("\n  [Timeout]")
+            print("\n  [Timeout — saisie annulée]")
             return ""
         touche = lire_touche()
         if touche and touche.isdigit():
             saisi += touche
-            bip(1, 0.05) # Petit bip de confirmation touche
             print("*", end="", flush=True)
         time.sleep(0.05)
     print()
     return saisi
 
-# --- GESTION DES ÉTATS ---
+
+# ════════════════════════════════════════════════════════════════════════════
+# Transitions d'état
+# ════════════════════════════════════════════════════════════════════════════
 
 def passer_en_desarmee():
-    global etat_alarme, _thread_buzzer
+    global etat, _thread_buzzer
     _stop_buzzer.set()
     if _thread_buzzer and _thread_buzzer.is_alive():
         _thread_buzzer.join()
     with etat_lock:
-        etat_alarme = "Désarmée"
+        etat = "desarmee"
     led_bleu()
-    print("[ÉTAT] ● DÉSARMÉE")
+    print("[ÉTAT] ● DÉSARMÉE — LED bleue")
 
 def passer_en_armee():
-    global etat_alarme
+    global etat
     with etat_lock:
-        etat_alarme = "Armée"
+        etat = "armee"
     led_vert()
-    bip(nb=2)
-    print("[ÉTAT] ● ARMÉE")
+    bip(nb=2)                           # 2 petits bips = armée avec succès
+    print("[ÉTAT] ● ARMÉE — LED verte — PIR actif")
 
 def passer_en_declenchee():
-    global etat_alarme, _thread_buzzer
+    global etat, _thread_buzzer
     with etat_lock:
-        # On ne déclenche que si on était armé
-        if etat_alarme == "Armée":
-            etat_alarme = "Déclenchée"
-            led_rouge()
-            print("[ÉTAT] ● DÉCLENCHÉE !")
-            _stop_buzzer.clear()
-            _thread_buzzer = threading.Thread(target=_buzzer_continu, args=(_stop_buzzer,), daemon=True)
-            _thread_buzzer.start()
+        etat = "declenchee"
+    led_rouge()
+    print("[ÉTAT] ● DÉCLENCHÉE — LED rouge — buzzer actif")
+    _stop_buzzer.clear()
+    _thread_buzzer = threading.Thread(
+        target=_buzzer_continu, args=(_stop_buzzer,), daemon=True
+    )
+    _thread_buzzer.start()
 
-# --- SURVEILLANCE ---
+
+# ════════════════════════════════════════════════════════════════════════════
+# Thread : surveillance PIR
+# ════════════════════════════════════════════════════════════════════════════
 
 def _surveiller_pir(stop_evt: threading.Event):
+    """Lit le PIR toutes les 100 ms. Déclenche si mouvement et armée."""
+    print("[PIR] Surveillance démarrée")
     while not stop_evt.is_set():
         with etat_lock:
-            local_etat = etat_alarme
-        if local_etat == "Armée" and GPIO.input(PIN_PIR) == GPIO.HIGH:
+            etat_local = etat
+        if etat_local == "armee" and GPIO.input(PIN_PIR) == GPIO.HIGH:
+            print("[PIR] ⚠ Mouvement détecté !")
             passer_en_declenchee()
-        time.sleep(0.2)
+        time.sleep(0.1)
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# Boucle principale
+# ════════════════════════════════════════════════════════════════════════════
 
 def boucle_principale():
-    """Lancée par board1main dans un thread."""
+    global etat
+
+    # Démarrage : LED bleue (désarmée)
     passer_en_desarmee()
-    
-    stop_pir = threading.Event()
-    thread_pir = threading.Thread(target=_surveiller_pir, args=(stop_pir,), daemon=True)
+
+    # Thread PIR en arrière-plan
+    stop_pir   = threading.Event()
+    thread_pir = threading.Thread(
+        target=_surveiller_pir, args=(stop_pir,), daemon=True
+    )
     thread_pir.start()
 
     print("\n=== Système d'alarme démarré ===")
+    print("  Tapez le code sur le keypad pour armer / désarmer.\n")
 
     try:
         while True:
             with etat_lock:
-                current = etat_alarme
+                etat_local = etat
 
-            # CAS 1 : L'alarme est éteinte, on attend le code pour l'allumer
-            if current == "Désarmée":
-                print("  [DÉSARMÉE] Entrez code pour ARMER...")
-                code = lire_code(len(CODE_SECRET))
+            # ── DÉSARMÉE : attente d'un code pour armer ──────────────────────
+            if etat_local == "desarmee":
+                print("  → Saisir le code pour ARMER :")
+                code = lire_code(nb_chiffres=len(CODE_SECRET))
                 if code == CODE_SECRET:
+                    print("  ✔ Code correct → armement")
                     passer_en_armee()
                 elif code != "":
-                    bip(1, 0.5)
+                    print("  ✘ Code incorrect")
+                    bip(nb=1, duree=0.4)           # 1 bip long = erreur
 
-            # CAS 2 : L'alarme est allumée, on attend le code pour l'éteindre
-            elif current == "Armée":
-                # On réutilise lire_code ici pour permettre le désarmement manuel
-                print("  [ARMÉE] Entrez code pour DÉSARMER...")
-                code = lire_code(len(CODE_SECRET))
+            # ── ARMÉE : le thread PIR gère le déclenchement ──────────────────
+            elif etat_local == "armee":
+                time.sleep(0.1)
+
+            # ── DÉCLENCHÉE : attente du code pour désarmer ───────────────────
+            elif etat_local == "declenchee":
+                print("  → Saisir le code pour DÉSARMER :")
+                code = lire_code(nb_chiffres=len(CODE_SECRET))
                 if code == CODE_SECRET:
+                    print("  ✔ Code correct → désarmement")
                     passer_en_desarmee()
                 elif code != "":
-                    bip(1, 0.5)
+                    print("  ✘ Code incorrect — alarme maintenue")
 
-            # CAS 3 : L'alarme sonne, on attend le code pour stopper le buzzer
-            elif current == "Déclenchée":
-                print("  [ALERTE] Entrez code pour STOPPER...")
-                code = lire_code(len(CODE_SECRET))
-                if code == CODE_SECRET:
-                    passer_en_desarmee()
-            
-            time.sleep(0.1)
+    except KeyboardInterrupt:
+        print("\n[INFO] Arrêt demandé (Ctrl+C)")
+
     finally:
         stop_pir.set()
         _stop_buzzer.set()
         led_off()
+        GPIO.cleanup()
+        print("[INFO] GPIO libérés. Fin du programme.")
+

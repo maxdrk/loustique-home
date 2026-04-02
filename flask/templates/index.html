@@ -120,7 +120,7 @@
 
   <div class="carte">
     <h1>Loustiques Home</h1>
-    <p class="soustitre">Connectez-vous pour accéder à votre espace.</p>
+    <p class="soustitre">Connectez-vous via mot de passe ou avec votre bagde pour accéder à votre espace.</p>
 
     <div class="champ">
       <label for="username">Identifiant</label>
@@ -129,7 +129,7 @@
 
     <div class="champ">
       <label for="password">Mot de passe</label>
-      <input type="password" id="password" placeholder="Mot de passe du loustique" autocomplete="current-password" />
+      <input type="password" id="password" placeholder="Wola ouais" autocomplete="current-password" />
     </div>
 
     <button id="btn" onclick="handleLogin()">Se connecter</button>
@@ -139,15 +139,13 @@
     <p class="footer">Accès réservé aux utilisateurs ajoutés par les loustiques.</p>
   </div>
 
-<script>
-   
+ <script>
     ["username", "password"].forEach(id => {
       document.getElementById(id).addEventListener("keydown", e => {
         if (e.key === "Enter") handleLogin();
       });
     });
 
-   -
     async function handleLogin() {
       const username = document.getElementById("username").value.trim();
       const password = document.getElementById("password").value;
@@ -189,10 +187,12 @@
         btn.textContent = "Se connecter";
       }
     }
+
     setInterval(async () => {
       try {
-        
-        const res = await fetch('/rfid-scan'); 
+        // Attention : Vérifie que cette route correspond bien à celle dans main.py
+        // (J'avais mis /check-rfid-login dans mon exemple précédent)
+        const res = await fetch('/check-rfid-login'); 
         const data = await res.json();
 
         if (data.success) {
@@ -211,10 +211,9 @@
           }, 1000);
         }
       } catch (e) {
-       
+        // Erreurs ignorées silencieusement
       }
-    }, 2000); 
+    }, 1500); 
   </script>
-
 </body>
 </html>
