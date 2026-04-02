@@ -243,6 +243,11 @@ CREATE TABLE Auth (
 
 ---
 
+### Note 
+
+On a essayé de le terminer au mieux mais l'automatisation est incomplète et l'arborescence des 2 raspberries n'est pas identique des améliorations ont besoin d'être apportées au niveau des scripts pour une automatisation complète
+
 ## Groupe
 
 Projet réalisé par **Les Loustiques** — étudiants à l'**EPHEC** (Louvain-La-Neuve).
+©️ **Les loustiques**
