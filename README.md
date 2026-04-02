@@ -245,7 +245,7 @@ CREATE TABLE Auth (
 
 ### Note 
 
-On a essayé de le terminer au mieux mais l'automatisation est incomplète et l'arborescence des 2 raspberries n'est pas identique des améliorations ont besoin d'être apportées au niveau des scripts pour une automatisation complète
+On a essayé de le finaliser au mieux, mais l’automatisation reste incomplète et l’arborescence des deux Raspberry Pi n’est pas identique. Des améliorations doivent encore être apportées aux scripts afin d’assurer une automatisation complète.
 
 ## Groupe
 
