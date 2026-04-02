@@ -18,10 +18,13 @@ L'application repose sur un serveur **Flask** (Python) qui expose une API et ser
 loustiques-home/
 ├── flask/
 │   ├── main.py            # Point d'entrée Flask — routes et API
+    ├── .env               # Variable d'environnement           
 │   ├── auth.py            # Authentification et gestion des utilisateurs
 │   ├── add_user.py        # Ajout d'utilisateur (appelé par l'admin)
 │   ├── led.py             # Contrôle de la LED via GPIO
-│   ├── log.py             # Configuration du système de logs
+│   ├── log.py
+    ├── run_flask.sh           # Script de démarrage du serveur
+    ├── requirement.txt        # Dépendances Python            # Configuration du système de logs
 │   └── templates/
 │       ├── index.html     # Page de connexion
 │       ├── dashboard.html # Tableau de bord principal
@@ -33,9 +36,7 @@ loustiques-home/
 │   └── ssl/
 │       ├── cert.pem       # Certificat SSL (généré automatiquement)
 │       └── key.pem        # Clé privée SSL (générée automatiquement)
-├── run_flask.sh           # Script de démarrage du serveur
-├── requirement.txt        # Dépendances Python
-└── .env                   # Variables d'environnement (non versionné)
+                
 ```
 
 ---
@@ -57,6 +58,10 @@ sudo bash run_flask.sh
 ### `web_secu/ssl.sh`
 
 Génère un certificat SSL auto-signé (`cert.pem` + `key.pem`) dans `web_secu/ssl/`. Le certificat est valable 365 jours et est émis pour `loustiques.local`. Si le certificat existe déjà, le script ne le régénère pas.
+
+## Note
+
+le script run_flash.sh s'occupe de la génération pour que le serveuf flask ai d'office un certificat valide
 
 ```
 C=BE / ST=Brabant Wallon / L=Louvain-La-Neuve / O=Les Loustiques / OU=EPHEC / CN=loustiques.local
@@ -98,6 +103,7 @@ Gère l'authentification des utilisateurs et la récupération des comptes.
 - `init()` — ouvre une connexion MySQL à partir des variables d'environnement `.env`
 - `login(username, password)` — vérifie les identifiants en comparant le mot de passe avec le hash bcrypt stocké en base
 - `get_users()` — retourne la liste de tous les utilisateurs (username, rôle, date de création)
+-  `get_user_by_rfid` - s'occupe de récupérer et chercher l'utilisateur lié à son RFID dans la base de données
 
 ---
 
@@ -107,11 +113,6 @@ Permet d'ajouter un nouvel utilisateur en base de données. Cette fonction est a
 
 ---
 
-### `led.py`
-
-Contient la fonction `led(utilisateur)` qui simule (ou déclenche réellement sur le Pi) l'allumage d'une LED. Le code GPIO est commenté pour permettre les tests hors Raspberry Pi. Chaque déclenchement est logué avec le nom de l'utilisateur qui en est à l'origine.
-
----
 
 ### `main.py`
 
@@ -240,14 +241,16 @@ CREATE TABLE Auth (
 | `bcrypt` | Hashage des mots de passe |
 | `python-dotenv` | Chargement du fichier `.env` |
 | `gpiozero` | Contrôle des GPIOs du Raspberry Pi |
+|  `mfrc`   | Bibliothèque destiné au RFID
 
 ---
 
 ### Note 
 
-On a essayé de le finaliser au mieux, mais l’automatisation reste incomplète et l’arborescence des deux Raspberry Pi n’est pas identique. Des améliorations doivent encore être apportées aux scripts afin d’assurer une automatisation complète.
+On a essayé de le finaliser au mieux, mais l’automatisation reste incomplète et l’arborescence des deux Raspberry Pi n’est pas identique. Des améliorations doivent encore être apportées aux scripts afin d’assurer une automatisation complète. Il est également possible que certaines informations du README soient manquantes ou ne soient plus en adéquation avec l’arborescence, celle-ci ayant subi de nombreuses mises à jour techniques et logiques.
 
 ## Groupe
 
 Projet réalisé par **Les Loustiques** — étudiants à l'**EPHEC** (Louvain-La-Neuve).
+
 ©️ **Les loustiques**
