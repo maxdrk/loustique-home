@@ -5,204 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Loustiques Home — Dashboard</title>
   <style>
+    /* Style conservé pour l'interface sombre et moderne */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: system-ui, sans-serif;
-      background: #1f1f1f;
-      color: #f0f0f0;
-      min-height: 100vh;
-    }
-
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 18px 32px;
-      border-bottom: 1px solid #2e2e2e;
-      background: #1a1a1a;
-    }
-
-    .logo {
-      font-size: 17px;
-      font-weight: 700;
-    }
-
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .status-dot {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 12px;
-      color: #888;
-    }
-
-    .dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: #4ade80;
-      animation: pulse 2s infinite;
-    }
-
+    body { font-family: system-ui, sans-serif; background: #1f1f1f; color: #f0f0f0; min-height: 100vh; }
+    header { display: flex; align-items: center; justify-content: space-between; padding: 18px 32px; border-bottom: 1px solid #2e2e2e; background: #1a1a1a; }
+    .logo { font-size: 17px; font-weight: 700; }
+    .header-right { display: flex; align-items: center; gap: 20px; }
+    .status-dot { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #888; }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; animation: pulse 2s infinite; }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-
-    .logout {
-      font-family: inherit;
-      font-size: 12px;
-      color: #888;
-      background: none;
-      border: 1px solid #3a3a3a;
-      padding: 6px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: color 0.15s, border-color 0.15s;
-    }
+    .logout { font-family: inherit; font-size: 12px; color: #888; background: none; border: 1px solid #3a3a3a; padding: 6px 14px; border-radius: 6px; cursor: pointer; transition: color 0.15s, border-color 0.15s; }
     .logout:hover { color: #f0f0f0; border-color: #666; }
-
-    main {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 36px 32px;
-    }
-
-    .welcome {
-      margin-bottom: 36px;
-      text-align: center;
-    }
-
-    .welcome .label {
-      font-size: 14px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: #2563eb;
-      margin-bottom: 8px;
-    }
-
-    .welcome h1 {
-      font-size: 30px;
-      font-weight: 700;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 14px;
-      margin-bottom: 32px;
-    }
-
-    .card {
-      background: #2a2a2a;
-      border: 1px solid #333;
-      border-radius: 8px;
-      padding: 22px;
-      position: relative;
-    }
-
-    .card-label {
-      font-size: 11px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: #888;
-      margin-bottom: 10px;
-    }
-
-    .card-value {
-      font-size: 22px;
-      font-weight: 700;
-    }
-
-    .card-sub {
-      font-size: 12px;
-      color: #666;
-      margin-top: 6px;
-    }
-
-    .card-icon {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      width: 28px;
-      height: 28px;
-      opacity: 0.15;
-    }
-
-    .section-title {
-      font-size: 11px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: #666;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+    main { max-width: 1100px; margin: 0 auto; padding: 36px 32px; }
+    .welcome { margin-bottom: 36px; text-align: center; }
+    .welcome .label { font-size: 14px; letter-spacing: 0.15em; text-transform: uppercase; color: #2563eb; margin-bottom: 8px; }
+    .welcome h1 { font-size: 30px; font-weight: 700; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 32px; }
+    .card { background: #2a2a2a; border: 1px solid #333; border-radius: 8px; padding: 22px; position: relative; }
+    .card-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #888; margin-bottom: 10px; }
+    .card-value { font-size: 22px; font-weight: 700; }
+    .card-sub { font-size: 12px; color: #666; margin-top: 6px; }
+    .card-icon { position: absolute; top: 20px; right: 20px; width: 28px; height: 28px; opacity: 0.15; }
+    .section-title { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: #666; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
     .section-title::after { content: ''; flex: 1; height: 1px; background: #2e2e2e; }
-
-    .actions {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 12px;
-    }
-
-    .action-btn {
-      background: #2a2a2a;
-      border: 1px solid #333;
-      border-radius: 8px;
-      padding: 18px 20px;
-      cursor: pointer;
-      text-align: left;
-      color: #f0f0f0;
-      position: relative;
-      transition: border-color 0.15s, background 0.15s;
-    }
+    .actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+    .action-btn { background: #2a2a2a; border: 1px solid #333; border-radius: 8px; padding: 18px 20px; cursor: pointer; text-align: left; color: #f0f0f0; position: relative; transition: border-color 0.15s, background 0.15s; }
     .action-btn:hover { border-color: #2563eb; background: #2e2e3a; }
     .action-btn:active { transform: scale(0.98); }
-
-    .action-btn .a-label {
-      font-size: 14px;
-      font-weight: 600;
-      display: block;
-      margin-bottom: 4px;
-    }
-    .action-btn .a-sub {
-      font-size: 12px;
-      color: #ffffff;
-    }
-    .action-btn .a-arrow {
-      position: absolute;
-      right: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #555;
-      font-size: 18px;
-      transition: color 0.15s, right 0.15s;
-    }
+    .action-btn .a-label { font-size: 14px; font-weight: 600; display: block; margin-bottom: 4px; }
+    .action-btn .a-sub { font-size: 12px; color: #ffffff; }
+    .action-btn .a-arrow { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #555; font-size: 18px; transition: color 0.15s, right 0.15s; }
     .action-btn:hover .a-arrow { color: #2563eb; right: 12px; }
-
-    .toast {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      background: #2a2a2a;
-      border: 1px solid #333;
-      border-radius: 8px;
-      padding: 12px 18px;
-      font-size: 13px;
-      color: #f0f0f0;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      transform: translateY(20px);
-      opacity: 0;
-      transition: transform 0.3s, opacity 0.3s;
-      z-index: 100;
-    }
+    .toast { position: fixed; bottom: 24px; right: 24px; background: #2a2a2a; border: 1px solid #333; border-radius: 8px; padding: 12px 18px; font-size: 13px; color: #f0f0f0; display: flex; align-items: center; gap: 10px; transform: translateY(20px); opacity: 0; transition: transform 0.3s, opacity 0.3s; z-index: 100; }
     .toast.show { transform: translateY(0); opacity: 1; }
     .toast-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; flex-shrink: 0; }
   </style>
@@ -225,65 +59,73 @@
 
     <div class="grid">
       <div class="card">
-        <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        <div class="card-label">Statut</div>
-        <div class="card-value" style="color:#4ade80;">En ligne</div>
-        <div class="card-sub">Serveur opérationnel</div>
-      </div>
-      <div class="card">
         <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         <div class="card-label">Heure locale</div>
         <div class="card-value" id="clock">--:--</div>
-        <div class="card-sub" id="date-display">--</div></div>
-
-<div class="card">
-        <div class="card-label">Température</div>
-        <div class="card-value" id="temp-display">-- °C</div>
-        
-    
-        <div class="card"></div>
-        <div class="card-label">Porte</div>
         <div class="card-sub" id="date-display">--</div>
       </div>
+
       <div class="card">
-        <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-        <div class="card-label">Raspberry Pi 1 (actuelle)</div>
-        <div class="card-value" style="color:green;">Actif</div>
-        <div class="card-sub">Flask 3.1</div>
+        <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        <div class="card-label">Température</div>
+        <div class="card-value" id="temp-display">-- °C</div>
+        <div class="card-sub">Capteur DHT11 (Pi 2)</div>
       </div>
       <div class="card">
-        <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-        <div class="card-label">Raspberry Pi 2 distant </div>
-        <div class="card-value" style="color:green;">Actif</div>
-        <div class="card-sub">FastAPi</div>
-      </div>
+  <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+    <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/>
+  </svg>
+  <div class="card-label">Luminosité</div>
+  <div class="card-value" id="ldr-display">--</div>
+  <div class="card-sub">Capteur LDR (Pi 2)</div>
+</div>
+
       <div class="card">
-        <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        <div class="card-label">Session</div>
-        <div class="card-value" style="color: green;">Authentifiée</div>
-        <div class="card-sub">Accès autorisé</div>
+        <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+        <div class="card-label">Porte / Volet</div>
+        <div class="card-value" id="door-display">--</div>
+        <div class="card-sub">État du moteur (Pi 2)</div>
+      </div>
+
+      <div class="card">
+        <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <div class="card-label">Alarme</div>
+        <div class="card-value" id="alarm-display">--</div>
+        <div class="card-sub">Sécurité (Pi 1)</div>
+      </div>
+
+      <div class="card">
+        <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        <div class="card-label">Raspberry Pi 1</div>
+        <div class="card-value" id="status-pi44">Vérification...</div>
+        <div class="card-sub">Serveur Flask</div>
+      </div>
+
+      <div class="card">
+        <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        <div class="card-label">Raspberry Pi 2</div>
+        <div class="card-value" id="status-pi32">Vérification...</div>
+        <div class="card-sub">Serveur FastAPI</div>
       </div>
     </div>
 
     <div class="section-title">Actions rapides</div>
-
     <div class="actions">
       <button class="action-btn" onclick="call_led_up()">
         <span class="a-label">💡 UP LED</span>
-        <span class="a-sub">Allumer la LED</span>
+        <span class="a-sub">Allumer la LED (Pi 2)</span>
         <span class="a-arrow">›</span>
       </button>
-       <button class="action-btn" onclick="call_led_down()">
+
+      <button class="action-btn" onclick="call_led_down()">
         <span class="a-label">💡 DOWN LED</span>
-        <span class="a-sub">Éteindre la led</span>
-        <span class="a-arrow">›</span></button>
-        <button class="action-btn" onclick="callAlarm()">
-        <span class="a-label">🚨 Alarme</span>
-        <span class="a-sub">Désarmer l'alarme</span>
-        <span class="a-arrow">›</span></button>
+        <span class="a-sub">Éteindre la LED (Pi 2)</span>
+        <span class="a-arrow">›</span>
+      </button>
+
       <button class="action-btn" onclick="go_admin()">
         <span class="a-label">Administration</span>
-        <span class="a-sub">Administrer les loustiques</span>
+        <span class="a-sub">Gérer les utilisateurs</span>
         <span class="a-arrow">›</span>
       </button>
     </div>
@@ -297,78 +139,89 @@
   <script>
     function updateClock() {
       const now = new Date();
-      document.getElementById("clock").textContent =
-        now.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
-      document.getElementById("date-display").textContent =
-        now.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+      document.getElementById("clock").textContent = now.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+      document.getElementById("date-display").textContent = now.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
     }
-    updateClock();
     setInterval(updateClock, 1000);
+    updateClock();
+  async function updateAll() {
+      console.log("Rafraîchissement des données...");
 
-   
-     /*
-    async function callAlarm() {
+      
       try {
-        const res = await fetch('/alarme', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' }
-        });
-        showToast("alarme activée !");
-      } catch {
-        showToast("Erreur lors de l'appel alarme.");
-      }*/
-
-      async function get_temperature() {
-      try {
-        const res = await fetch('/api/temperature', {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' }
-        });
+        const resA = await fetch('/alarme_status');
+        const dataA = await resA.json();
+        const elA = document.getElementById("alarm-display");
+        const elS1 = document.getElementById("status-pi44");
         
-        const data = await res.json();
-        
-  
-        if (data.success) {
-          document.getElementById("temp-display").textContent = data.temperature + " °C";
-        } else {
-          document.getElementById("temp-display").textContent = "Erreur";
-          console.error("Erreur de température :", data.message);
+        if (dataA.success) {
+          elA.textContent = dataA.status;
+          elA.style.color = (dataA.status === "desarmee") ? "#4ade80" : "#f87171";
+          elS1.textContent = "Actif";
+          elS1.style.color = "#4ade80";
         }
       } catch (e) {
-        document.getElementById("temp-display").textContent = "Hors ligne";
-        console.error("Impossible de joindre le relais pour la température.");
+        document.getElementById("status-pi44").textContent = "Hors ligne";
+        document.getElementById("status-pi44").style.color = "#f87171";
       }
-      }
-    get_temperature();
-    setInterval(get_temperature, 60000);
-       async function call_led_down() {
       try {
-        const res = await fetch('/api/down_led', {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' }
-        });
-        showToast("led activée !");
-      } catch {
-        showToast("Erreur lors de l'appel board1.");
-      }}
+    const resL = await fetch('/api/luminosite'); 
+    const dataL = await resL.json();
+    const elL = document.getElementById("ldr-display");
     
+    if (dataL.success) {
+      elL.textContent = dataL.status;
+      elL.style.color = (dataL.status === "Jour") ? "#fbbf24" : "#818cf8";
+    }
+  } catch (e) {
+    console.log("Erreur de lecture luminosité");
+    document.getElementById("ldr-display").textContent = "Erreur";
+  }
+
+      try {
+        const resV = await fetch('/api/volet_status');
+        const dataV = await resV.json();
+        const elV = document.getElementById("door-display");
+        const elS2 = document.getElementById("status-pi32");
+
+        if (dataV.success) {
+          elV.textContent = dataV.status;
+          elV.style.color = (dataV.status === "Ouvert") ? "#4ade80" : "#f87171";
+          elS2.textContent = "Actif";
+          elS2.style.color = "#4ade80";
+        } else {
+          elS2.textContent = "Injoignable";
+          elS2.style.color = "#fbbf24";
+        }
+      } catch (e) {
+        document.getElementById("status-pi32").textContent = "Hors ligne";
+        document.getElementById("status-pi32").style.color = "#f87171";
+      }
+      try {
+        const resT = await fetch('/api/temperature');
+        const dataT = await resT.json();
+        if (dataT.success) {
+          document.getElementById("temp-display").textContent = dataT.temperature + " °C";
+        }
+      } catch (e) {
+        document.getElementById("temp-display").textContent = "-- °C";
+      }
+    }
+    setInterval(updateAll, 15000);
+    updateAll();
     async function call_led_up() {
       try {
-        const res = await fetch('/api/up_led', {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' }
-        });
+        await fetch('/api/up_led');
         showToast("LED allumée !");
-      } catch {
-        showToast("Erreur lors de l'appel Pi 2.");
-      }
+      } catch { showToast("Erreur Pi 2"); }
     }
-    
-
-    function go_admin() {
-      window.location.href = "/admin";
+    async function call_led_down() {
+      try {
+        await fetch('/api/down_led');
+        showToast("LED éteinte !");
+      } catch { showToast("Erreur Pi 2"); }
     }
-
+    function go_admin() { window.location.href = "/admin"; }
     function showToast(msg) {
       const toast = document.getElementById("toast");
       document.getElementById("toast-text").textContent = msg;

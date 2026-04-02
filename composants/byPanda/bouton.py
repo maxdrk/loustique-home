@@ -35,7 +35,7 @@ def test_boutons():
                 
                 afficher_temperature(temperature_DHT, temperature_cible)        
             etatPrecedent_up = etat_up
-        -
+        
         if etat_down != etatPrecedent_down:
             if etat_down == 0:
                 print("Bouton DOWN Appuyé ⬇️")
@@ -48,9 +48,3 @@ def test_boutons():
 
         t.sleep(0.05)
 
-if __name__ == "__main__":
-    try:
-        test_boutons()
-    except KeyboardInterrupt:
-        print("\nFin du test")
-        GPIO.cleanup()

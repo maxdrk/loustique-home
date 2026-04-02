@@ -1,246 +1,194 @@
-import time
 import RPi.GPIO as GPIO
+import time
+import threading
 
-GPIO.setmode(GPIO.BCM)
+# Configuration initiale
+GPIO.setmode(GPIO.BOARD) # Utilisation des numéros physiques des pins
 GPIO.setwarnings(False)
 
+# --- CONFIGURATION PINS (BOARD) ---
+PIN_LED_R  = 11
+PIN_LED_G  = 15
+PIN_LED_B  = 13
+PIN_PIR    = 10
+PIN_BUZZER = 12
 
-class SystemeAlarme:
-    def __init__(self):
-        """
-        Initialise les composants liés à l'alarme.
+# Pins Keypad (Vérifie bien tes branchements physiques sur ces numéros)
+ROWS = [29, 31, 33, 35]        
+COLS = [37, 32, 36, 38]          
 
-        Cette classe gère uniquement la logique locale de sécurité :
-        - le capteur PIR
-        - le buzzer
-        - la LED RGB de statut
-        - le clavier 4x4
+KEYPAD_MAP = [
+    ['1', '2', '3', 'A'],
+    ['4', '5', '6', 'B'],
+    ['7', '8', '9', 'C'],
+    ['*', '0', '#', 'D'],
+]
 
-        Elle ne dépend d'aucune autre partie du projet.
-        """
+CODE_SECRET = "1234"
 
-        # -----------------------------
-        # Définition des pins physiques
-        # -----------------------------
-        self.pinPir = 15
-        self.pinBuzzer = 18
+# --- INITIALISATION GPIO ---
+GPIO.setup(PIN_LED_R,  GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(PIN_LED_G,  GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(PIN_LED_B,  GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(PIN_BUZZER, GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(PIN_PIR,    GPIO.IN)
 
-        self.pinLedRouge = 17
-        self.pinLedVerte = 27
-        self.pinLedBleue = 22
+for row in ROWS:
+    GPIO.setup(row, GPIO.OUT, initial=GPIO.HIGH)
+for col in COLS:
+    GPIO.setup(col, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-        # Clavier 4x4
-        # 4 lignes + 4 colonnes
-        self.lignes = [5, 6, 13, 19]
-        self.colonnes = [26, 12, 16, 20]
+etat_alarme = "Désarmée" 
+etat_lock = threading.Lock()
 
-        # Disposition classique d'un clavier 4x4
-        self.touches = [
-            ["1", "2", "3", "A"],
-            ["4", "5", "6", "B"],
-            ["7", "8", "9", "C"],
-            ["*", "0", "#", "D"]
-        ]
+_stop_buzzer   = threading.Event()
+_thread_buzzer = None
 
-        # -----------------------------
-        # Variables de fonctionnement
-        # -----------------------------
-        self.codeSecret = "1234"
-        self.codeSaisi = ""
 
-        # Etats possibles :
-        # - desarme
-        # - arme
-        # - alarme
-        self.etat = "desarme"
 
-        # Anti-rebond clavier
-        self.derniereLecture = 0
-        self.delaiLecture = 0.25
+def led(r=False, g=False, b=False):
+    GPIO.output(PIN_LED_R, GPIO.HIGH if r else GPIO.LOW)
+    GPIO.output(PIN_LED_G, GPIO.HIGH if g else GPIO.LOW)
+    GPIO.output(PIN_LED_B, GPIO.HIGH if b else GPIO.LOW)
 
-        self.initialiserGPIO()
-        self.mettreAJourEtat()
+def led_bleu():  led(b=True)
+def led_vert():  led(g=True)
+def led_rouge(): led(r=True)
+def led_off():   led()
 
-    def initialiserGPIO(self):
-        """Configure les broches du Raspberry Pi pour l'alarme."""
-        GPIO.setup(self.pinPir, GPIO.IN)
-        GPIO.setup(self.pinBuzzer, GPIO.OUT, initial=GPIO.LOW)
+def bip(nb=1, duree=0.08, pause=0.12):
+    for _ in range(nb):
+        GPIO.output(PIN_BUZZER, GPIO.HIGH)
+        time.sleep(duree)
+        GPIO.output(PIN_BUZZER, GPIO.LOW)
+        time.sleep(pause)
 
-        GPIO.setup(self.pinLedRouge, GPIO.OUT, initial=GPIO.LOW)
-        GPIO.setup(self.pinLedVerte, GPIO.OUT, initial=GPIO.LOW)
-        GPIO.setup(self.pinLedBleue, GPIO.OUT, initial=GPIO.LOW)
+def _buzzer_continu(stop_event: threading.Event):
+    while not stop_event.is_set():
+        GPIO.output(PIN_BUZZER, GPIO.HIGH)
+        time.sleep(0.5)
+        GPIO.output(PIN_BUZZER, GPIO.LOW)
+        time.sleep(0.5)
+    GPIO.output(PIN_BUZZER, GPIO.LOW)
 
-        for pin in self.lignes:
-            GPIO.setup(pin, GPIO.OUT, initial=GPIO.LOW)
 
-        for pin in self.colonnes:
-            GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+def lire_touche():
 
-    def definirCouleur(self, rouge, vert, bleu):
-        """
-        Allume la LED RGB selon la couleur voulue.
+    for i, row in enumerate(ROWS):
+        GPIO.output(row, GPIO.LOW)
+        time.sleep(0.01) # Stabilisation électrique
+        for j, col in enumerate(COLS):
+            if GPIO.input(col) == GPIO.LOW:
+                time.sleep(0.05) # Anti-rebond
+                while GPIO.input(col) == GPIO.LOW:
+                    time.sleep(0.01) 
+                GPIO.output(row, GPIO.HIGH)
+                return KEYPAD_MAP[i][j]
+        GPIO.output(row, GPIO.HIGH)
+    return None
 
-        Paramètres :
-        - rouge : True / False
-        - vert  : True / False
-        - bleu  : True / False
-        """
-        GPIO.output(self.pinLedRouge, GPIO.HIGH if rouge else GPIO.LOW)
-        GPIO.output(self.pinLedVerte, GPIO.HIGH if vert else GPIO.LOW)
-        GPIO.output(self.pinLedBleue, GPIO.HIGH if bleu else GPIO.LOW)
+def lire_code(nb_chiffres=4, timeout=20):
+    saisi = ""
+    debut  = time.time()
+    print("  Entrez le code : ", end="", flush=True)
+    while len(saisi) < nb_chiffres:
+        if time.time() - debut > timeout:
+            print("\n  [Timeout]")
+            return ""
+        touche = lire_touche()
+        if touche and touche.isdigit():
+            saisi += touche
+            bip(1, 0.05) # Petit bip de confirmation touche
+            print("*", end="", flush=True)
+        time.sleep(0.05)
+    print()
+    return saisi
 
-    def mettreAJourEtat(self):
-        """
-        Met à jour les sorties selon l'état actuel du système.
+# --- GESTION DES ÉTATS ---
 
-        - desarme : LED verte, buzzer éteint
-        - arme    : LED bleue, buzzer éteint
-        - alarme  : LED rouge, buzzer allumé
-        """
-        if self.etat == "desarme":
-            self.definirCouleur(False, True, False)
-            GPIO.output(self.pinBuzzer, GPIO.LOW)
+def passer_en_desarmee():
+    global etat_alarme, _thread_buzzer
+    _stop_buzzer.set()
+    if _thread_buzzer and _thread_buzzer.is_alive():
+        _thread_buzzer.join()
+    with etat_lock:
+        etat_alarme = "Désarmée"
+    led_bleu()
+    print("[ÉTAT] ● DÉSARMÉE")
 
-        elif self.etat == "arme":
-            self.definirCouleur(False, False, True)
-            GPIO.output(self.pinBuzzer, GPIO.LOW)
+def passer_en_armee():
+    global etat_alarme
+    with etat_lock:
+        etat_alarme = "Armée"
+    led_vert()
+    bip(nb=2)
+    print("[ÉTAT] ● ARMÉE")
 
-        elif self.etat == "alarme":
-            self.definirCouleur(True, False, False)
-            GPIO.output(self.pinBuzzer, GPIO.HIGH)
+def passer_en_declenchee():
+    global etat_alarme, _thread_buzzer
+    with etat_lock:
+        # On ne déclenche que si on était armé
+        if etat_alarme == "Armée":
+            etat_alarme = "Déclenchée"
+            led_rouge()
+            print("[ÉTAT] ● DÉCLENCHÉE !")
+            _stop_buzzer.clear()
+            _thread_buzzer = threading.Thread(target=_buzzer_continu, args=(_stop_buzzer,), daemon=True)
+            _thread_buzzer.start()
 
-    def armer(self):
-        """Passe le système en mode armé."""
-        self.etat = "arme"
-        self.codeSaisi = ""
-        self.mettreAJourEtat()
-        print("Alarme activée.")
+# --- SURVEILLANCE ---
 
-    def desarmer(self):
-        """Passe le système en mode désarmé."""
-        self.etat = "desarme"
-        self.codeSaisi = ""
-        self.mettreAJourEtat()
-        print("Alarme désactivée.")
+def _surveiller_pir(stop_evt: threading.Event):
+    while not stop_evt.is_set():
+        with etat_lock:
+            local_etat = etat_alarme
+        if local_etat == "Armée" and GPIO.input(PIN_PIR) == GPIO.HIGH:
+            passer_en_declenchee()
+        time.sleep(0.2)
 
-    def declencherAlarme(self):
-        """
-        Déclenche l'alarme si un mouvement est détecté alors
-        que le système est armé.
-        """
-        if self.etat != "alarme":
-            self.etat = "alarme"
-            self.codeSaisi = ""
-            self.mettreAJourEtat()
-            print("Intrusion détectée : alarme déclenchée.")
+def boucle_principale():
+    """Lancée par board1main dans un thread."""
+    passer_en_desarmee()
+    
+    stop_pir = threading.Event()
+    thread_pir = threading.Thread(target=_surveiller_pir, args=(stop_pir,), daemon=True)
+    thread_pir.start()
 
-    def lireClavier(self):
-        """
-        Scanne le clavier 4x4.
+    print("\n=== Système d'alarme démarré ===")
 
-        Retour :
-        - la touche détectée
-        - None si aucune touche n'est pressée
-        """
-        maintenant = time.time()
+    try:
+        while True:
+            with etat_lock:
+                current = etat_alarme
 
-        if maintenant - self.derniereLecture < self.delaiLecture:
-            return None
+            # CAS 1 : L'alarme est éteinte, on attend le code pour l'allumer
+            if current == "Désarmée":
+                print("  [DÉSARMÉE] Entrez code pour ARMER...")
+                code = lire_code(len(CODE_SECRET))
+                if code == CODE_SECRET:
+                    passer_en_armee()
+                elif code != "":
+                    bip(1, 0.5)
 
-        for indexLigne, ligne in enumerate(self.lignes):
-            GPIO.output(ligne, GPIO.HIGH)
+            # CAS 2 : L'alarme est allumée, on attend le code pour l'éteindre
+            elif current == "Armée":
+                # On réutilise lire_code ici pour permettre le désarmement manuel
+                print("  [ARMÉE] Entrez code pour DÉSARMER...")
+                code = lire_code(len(CODE_SECRET))
+                if code == CODE_SECRET:
+                    passer_en_desarmee()
+                elif code != "":
+                    bip(1, 0.5)
 
-            for indexColonne, colonne in enumerate(self.colonnes):
-                if GPIO.input(colonne) == GPIO.HIGH:
-                    GPIO.output(ligne, GPIO.LOW)
-                    self.derniereLecture = maintenant
-
-                    # Petite attente pour éviter la lecture multiple
-                    time.sleep(0.05)
-
-                    return self.touches[indexLigne][indexColonne]
-
-            GPIO.output(ligne, GPIO.LOW)
-
-        return None
-
-    def validerCode(self):
-        """
-        Vérifie le code saisi.
-
-        Si le code est correct :
-        - alarme désarmée -> armée
-        - alarme armée    -> désarmée
-        - alarme déclenchée -> désarmée
-
-        Si le code est faux :
-        - on efface la saisie
-        """
-        if self.codeSaisi == self.codeSecret:
-            if self.etat == "desarme":
-                self.armer()
-            else:
-                self.desarmer()
-        else:
-            print("Code incorrect.")
-            self.codeSaisi = ""
-
-    def traiterClavier(self, touche):
-        """
-        Gère la logique du clavier :
-        - chiffres : ajout au code saisi
-        - * : efface la saisie
-        - # : valide le code
-        """
-        if touche is None:
-            return
-
-        print("Touche appuyée :", touche)
-
-        if touche == "*":
-            self.codeSaisi = ""
-            print("Saisie effacée.")
-            return
-
-        if touche == "#":
-            self.validerCode()
-            return
-
-        if touche.isdigit():
-            if len(self.codeSaisi) < 8:
-                self.codeSaisi += touche
-                print("Code en cours :", "*" * len(self.codeSaisi))
-
-    def surveillerPIR(self):
-        """
-        Vérifie le capteur de mouvement.
-
-        Si un mouvement est détecté alors que l'alarme est armée,
-        on passe en état d'alarme.
-        """
-        mouvement = GPIO.input(self.pinPir) == GPIO.HIGH
-
-        if self.etat == "arme" and mouvement:
-            self.declencherAlarme()
-
-    def mettreAJour(self):
-        """
-        Fonction appelée en boucle dans le programme principal.
-
-        Elle :
-        - lit le clavier
-        - traite la touche appuyée
-        - surveille le PIR
-        - synchronise LED et buzzer avec l'état courant
-        """
-        touche = self.lireClavier()
-        self.traiterClavier(touche)
-        self.surveillerPIR()
-        self.mettreAJourEtat()
-
-    def cleanup(self):
-        """
-        Remet les sorties dans un état propre à la fermeture.
-        """
-        GPIO.output(self.pinBuzzer, GPIO.LOW)
-        self.definirCouleur(False, False, False)
+            # CAS 3 : L'alarme sonne, on attend le code pour stopper le buzzer
+            elif current == "Déclenchée":
+                print("  [ALERTE] Entrez code pour STOPPER...")
+                code = lire_code(len(CODE_SECRET))
+                if code == CODE_SECRET:
+                    passer_en_desarmee()
+            
+            time.sleep(0.1)
+    finally:
+        stop_pir.set()
+        _stop_buzzer.set()
+        led_off()

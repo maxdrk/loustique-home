@@ -18,9 +18,14 @@ current_user = None
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 composants = os.path.join(BASE_DIR, "composants", "byPanda")
 sys.path.insert(0, composants)  
-from alarme import SystemeAlarme
+
 from lumieres import SystemeLumieres
-from board1main import *
+from board1main import call_board1
+import alarme
+
+
+
+
 
 @app.route("/")
 def index():
@@ -76,10 +81,13 @@ def check_rfid_login():
         return jsonify({"success": True, "username": user})
     
     return jsonify({"success": False})
+"""    
 @app.route("/alarme",methods=["POST"])
 def armer_alarme():
     SystemeAlarme.armer()
     return jsonify({"success": True})
+
+"""    
 @app.route("/admin")
 def admin_page():
     return render_template("admin.html")
@@ -87,8 +95,6 @@ def admin_page():
 @app.route("/admin/logs")
 def logs_page():
     return render_template("log.html")
-
-
 @app.route("/admin/logs/data")
 def get_logs():
     try:
@@ -114,32 +120,29 @@ def get_users():
     users = auth.get_users()
     return jsonify({"success": True, "users": users})
 
+@app.route("/alarme_status")
+def get_alarme_status_info(): # Nom différent de l'import 'alarme'
+    try:
+        # On accède à la variable du fichier
+        statut = alarme.etat_alarme 
+        return jsonify({"success": True, "status": statut})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500 
+
 @app.route("/api/<action>", methods=["GET"])
 def relais_pi2(action):
     url_pi2 = f"https://pi32.local:8000/{action}"
-    print(f"\n[RELAIS] 1. Tentative de contact avec le Pi 2 : {url_pi2}")
-    
     try:
         reponse = requests.get(url_pi2, timeout=5, verify=False)
-        print(f"[RELAIS] 2. Code HTTP reçu du Pi 2 : {reponse.status_code}")
-        print(f"[RELAIS] 3. Texte brut reçu du Pi 2 : {reponse.text}")
         if not reponse.ok:
-            return jsonify({
-                "success": False, 
-                "message": f"Le Pi 2 a refusé la requête (Code {reponse.status_code})"
-            }), reponse.status_code
-
-        # Si tout va bien, on tente d'extraire le JSON
-        try:
-            data = reponse.json()
-            return jsonify(data)
-        except ValueError:
-            print("[RELAIS] 4. ERREUR : Le Pi 2 n'a pas renvoyé de JSON valide.")
-            return jsonify({"success": False, "message": "Réponse invalide du Pi 2"}), 502
+            return jsonify({"success": False, "message": "Erreur Pi 2"}), reponse.status_code
+        
+        return jsonify(reponse.json())
             
     except Exception as e:
-        print(f"[RELAIS] ERREUR CRITIQUE : Impossible de joindre le Pi 2. Raison : {e}")
-        return jsonify({"success": False, "message": f"Erreur de connexion : {str(e)}"}), 500
+        # On ne garde que l'erreur si vraiment ça plante
+        print(f"[RELAIS] ERREUR : {e}")
+        return jsonify({"success": False, "message": str(e)}), 500
 
 
 if __name__ == "__main__":
