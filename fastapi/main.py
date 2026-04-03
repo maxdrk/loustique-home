@@ -62,21 +62,20 @@ async def eteindre_led():
         etatSysteme.signalerProbleme()
         return {"success": False, "message": str(e)}  
 
+
 @app.get("/temperature")
 async def read_temp():
     try:
         temp = controleur_thermostat.lireTemperature()
         if temp is None:
-            etatSysteme.signalerProbleme() 
-            return {"success": False, "message": "Impossible de lire le capteur DHT11"}
+            # On renvoie une valeur par défaut ou 0 pour éviter le undefined
+            return {"success": False, "temperature": "--", "message": "Erreur DHT11"}
             
-        etatSysteme.signalerOk()
-        afficher_temperature(temp, 18)
+        afficher_temperature(temp, bouton.temperature_cible)
         return {"success": True, "temperature": temp}
         
     except Exception as e: 
-        etatSysteme.signalerProbleme()
-        return {"success": False, "message": str(e)}
+        return {"success": False, "temperature": "Erreur", "message": str(e)}
 
 @app.get("/volet_status")
 async def volet_status():

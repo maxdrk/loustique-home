@@ -121,13 +121,17 @@ def get_users():
     return jsonify({"success": True, "users": users})
 
 @app.route("/alarme_status")
-def get_alarme_status_info(): # Nom différent de l'import 'alarme'
+def get_alarme_status_info():
     try:
-        # On accède à la variable du fichier
-        statut = alarme.etat_alarme 
-        return jsonify({"success": True, "status": statut})
+        # On appelle la fonction corrigée dans alarme.py
+        statut = alarme.etat_alarme() 
+        
+        return jsonify({
+            "success": True, 
+            "status": statut # Retournera "Désarmée", "Armée" ou "Déclenchée"
+        })
     except Exception as e:
-        return jsonify({"success": False, "message": str(e)}), 500 
+        return jsonify({"success": False, "message": str(e)}), 500
 
 @app.route("/api/<action>", methods=["GET"])
 def relais_pi2(action):
